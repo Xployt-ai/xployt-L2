@@ -1,0 +1,1103 @@
+{
+  "__files__": [
+    ".DS_Store",
+    "CODE-OF-CONDUCT.md",
+    "CONTRIBUTING.md",
+    "idurar-crm-erp.svg",
+    "image.png",
+    "INSTALLATION-INSTRUCTIONS.md",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md"
+  ],
+  ".github": {
+    "ISSUE_TEMPLATE": {
+      "__files__": [
+        "bug_report.md",
+        "custom.md",
+        "feature_request.md"
+      ]
+    },
+    "__files__": [
+      "pull_request_template.md"
+    ],
+    "workflows": {
+      "__files__": [
+        "CODEOWNERS",
+        "codesee-arch-diagram.yml",
+        "github-repo-stats.yml"
+      ]
+    }
+  },
+  "backend": {
+    "__files__": [
+      ".env",
+      ".eslintrc.js",
+      ".gitignore",
+      ".prettierignore",
+      ".prettierrc",
+      "deps.json",
+      "jsconfig.json",
+      "package-lock.json",
+      "package.json"
+    ],
+    "src": {
+      "__files__": [
+        "app.js",
+        "helpers.js",
+        "server.js"
+      ],
+      "controllers": {
+        "appControllers": {
+          "clientController": {
+            "__files__": [
+              "index.js",
+              "summary.js"
+            ]
+          },
+          "__files__": [
+            "index.js"
+          ],
+          "invoiceController": {
+            "__files__": [
+              "create.js",
+              "index.js",
+              "paginatedList.js",
+              "read.js",
+              "remove.js",
+              "schemaValidate.js",
+              "sendMail.js",
+              "summary.js",
+              "update.js"
+            ]
+          },
+          "paymentController": {
+            "__files__": [
+              "create.js",
+              "index.js",
+              "remove.js",
+              "sendMail.js",
+              "summary.js",
+              "update.js"
+            ]
+          },
+          "paymentModeController": {
+            "__files__": [
+              "index.js"
+            ]
+          },
+          "quoteController": {
+            "__files__": [
+              "convertQuoteToInvoice.js",
+              "create.js",
+              "index.js",
+              "paginatedList.js",
+              "read.js",
+              "sendMail.js",
+              "summary.js",
+              "update.js"
+            ]
+          },
+          "taxesController": {
+            "__files__": [
+              "index.js"
+            ]
+          }
+        },
+        "coreControllers": {
+          "adminAuth": {
+            "__files__": [
+              "index.js"
+            ]
+          },
+          "adminController": {
+            "__files__": [
+              "index.js"
+            ]
+          },
+          "settingController": {
+            "__files__": [
+              "index.js",
+              "listAll.js",
+              "listBySettingKey.js",
+              "readBySettingKey.js",
+              "updateBySettingKey.js",
+              "updateManySetting.js"
+            ]
+          },
+          "__files__": [
+            "setup.js"
+          ]
+        },
+        "middlewaresControllers": {
+          "createAuthMiddleware": {
+            "__files__": [
+              "authUser.js",
+              "checkAndCorrectURL.js",
+              "forgetPassword.js",
+              "index.js",
+              "isValidAuthToken.js",
+              "login.js",
+              "logout.js",
+              "resetPassword.js",
+              "sendMail.js"
+            ]
+          },
+          "createCRUDController": {
+            "__files__": [
+              "create.js",
+              "filter.js",
+              "index.js",
+              "listAll.js",
+              "paginatedList.js",
+              "read.js",
+              "remove.js",
+              "search.js",
+              "summary.js",
+              "update.js"
+            ]
+          },
+          "createUserController": {
+            "__files__": [
+              "index.js",
+              "read.js",
+              "updatePassword.js",
+              "updateProfile.js",
+              "updateProfilePassword.js"
+            ]
+          }
+        },
+        "pdfController": {
+          "__files__": [
+            "index.js"
+          ]
+        }
+      },
+      "emailTemplate": {
+        "__files__": [
+          "emailVerfication.js",
+          "SendEmailTemplate.js"
+        ]
+      },
+      "handlers": {
+        "downloadHandler": {
+          "__files__": [
+            "downloadPdf.js"
+          ]
+        },
+        "__files__": [
+          "errorHandlers.js"
+        ]
+      },
+      "locale": {
+        "__files__": [
+          "languages.js",
+          "useLanguage.js"
+        ],
+        "translation": {
+          "__files__": [
+            "en_us.js"
+          ]
+        }
+      },
+      "middlewares": {
+        "inventory": {
+          "__files__": [
+            "generateUniqueNumber.js",
+            "index.js"
+          ]
+        },
+        "__files__": [
+          "serverData.js"
+        ],
+        "settings": {
+          "__files__": [
+            "increaseBySettingKey.js",
+            "index.js",
+            "listAllSettings.js",
+            "listBySettingKey.js",
+            "loadSettings.js",
+            "readBySettingKey.js",
+            "updateBySettingKey.js"
+          ]
+        },
+        "uploadMiddleware": {
+          "__files__": [
+            "DoSingleStorage.js",
+            "index.js",
+            "LocalSingleStorage.js",
+            "singleStorageUpload.js"
+          ],
+          "utils": {
+            "__files__": [
+              "fileFilterMiddleware.js",
+              "LocalfileFilter.js"
+            ]
+          }
+        }
+      },
+      "models": {
+        "__files__": [
+          ".gitkeep"
+        ],
+        "appModels": {
+          "__files__": [
+            "Client.js",
+            "Invoice.js",
+            "Payment.js",
+            "PaymentMode.js",
+            "Quote.js",
+            "Taxes.js"
+          ]
+        },
+        "coreModels": {
+          "__files__": [
+            "Admin.js",
+            "AdminPassword.js",
+            "Setting.js",
+            "Upload.js"
+          ]
+        },
+        "utils": {
+          "__files__": [
+            "index.js"
+          ]
+        }
+      },
+      "pdf": {
+        "__files__": [
+          "Invoice.pug",
+          "Offer.pug",
+          "Payment.pug",
+          "Quote.pug"
+        ]
+      },
+      "public": {
+        "uploads": {
+          "admin": {
+            "__files__": [
+              "idurar-icon-png-80-i1kez.png"
+            ]
+          },
+          "setting": {
+            "__files__": [
+              "company-logo.png"
+            ]
+          }
+        }
+      },
+      "routes": {
+        "appRoutes": {
+          "__files__": [
+            "appApi.js"
+          ]
+        },
+        "coreRoutes": {
+          "__files__": [
+            "coreApi.js",
+            "coreAuth.js",
+            "coreDownloadRouter.js",
+            "corePublicRouter.js"
+          ]
+        }
+      },
+      "settings": {
+        "__files__": [
+          "index.js",
+          "useAppSettings.js",
+          "useDate.js",
+          "useMoney.js"
+        ]
+      },
+      "setup": {
+        "defaultSettings": {
+          "__files__": [
+            "appSettings.json",
+            "clientSettings.json",
+            "companySettings.json",
+            "financeSettings.json",
+            "invoiceSettings.json",
+            "moneyFormatSettings.json",
+            "quoteSettings.json"
+          ]
+        },
+        "__files__": [
+          "reset.js",
+          "setup.js",
+          "setupConfig.json"
+        ]
+      },
+      "utils": {
+        "__files__": [
+          "countryList.js",
+          "currency.js",
+          "currencyList.js",
+          "is-path-inside.js"
+        ]
+      }
+    }
+  },
+  "doc": {
+    "__files__": [
+      "README.fr.md",
+      "README.sp.md"
+    ]
+  },
+  "features": {
+    "__files__": [
+      "ar_eg_\u0645\u0644\u0641_\u0645\u0641\u062a\u0648\u062d_\u0627\u0644\u0645\u0635\u062f\u0631_\u0645\u062c\u0627\u0646\u064a_\u0644\u0644\u0628\u0631\u0645\u062c\u064a\u0627\u062a_ERP_CRM.md",
+      "bg_bg_\u0441\u0432\u043e\u0431\u043e\u0434\u0435\u043d_\u043e\u0442\u0432\u043e\u0440\u0435\u043d_\u0438\u0437\u0442\u043e\u0447\u043d\u0438\u043a_erp_crm_\u0441\u043e\u0444\u0442\u0443\u0435\u0440.md",
+      "bn_bd_\u09ab\u09cd\u09b0\u09bf_\u0993\u09aa\u09c7\u09a8_\u09b8\u09cb\u09b0\u09cd\u09b8_\u0987\u0986\u09b0\u09aa\u09bf_\u09b8\u09bf\u0986\u09b0\u098f\u09ae_\u09b8\u09ab\u099f\u0993\u09af\u09bc\u09cd\u09af\u09be\u09b0.md",
+      "ca_es_software_erp_crm_de_codi_obert_gratu\u00eft.md",
+      "cs_cz_voln\u00fd_otev\u0159en\u00fd_zdroj_erp_crm_software.md",
+      "da_dk_gratis_\u00e5ben_kilde_erp_crm_software.md",
+      "de_de_frei_offene_quelle_erp_crm_software.md",
+      "el_gr_\u03b5\u03bb\u03b5\u03cd\u03b8\u03b5\u03c1\u03bf_\u03b1\u03bd\u03bf\u03b9\u03ba\u03c4\u03bf_\u03c0\u03b7\u03b3\u03b1\u03af\u03bf_erp_crm_\u03bb\u03bf\u03b3\u03b9\u03c3\u03bc\u03b9\u03ba\u03cc.md",
+      "en_us_free_open_source_erp_crm_software.md",
+      "es_es_software_erp_crm_de_c\u00f3digo_abierto_y_gratis.md",
+      "et_ee_tasuta_avatud_l\u00e4htekoodiga_erp_crm_tarkvara.md",
+      "fa_ir_\u0631\u0627\u06cc\u06af\u0627\u0646_\u0645\u0646\u0628\u0639_\u0628\u0627\u0632_\u0646\u0631\u0645\u200c\u0627\u0641\u0632\u0627\u0631_\u0645\u062f\u06cc\u0631\u06cc\u062a_\u0645\u0627\u0644\u06cc_\u0648_\u0627\u0631\u062a\u0628\u0627\u0637\u0627\u062a.md",
+      "fi_fi_ilmainen_avoin_l\u00e4hdekoodi_erp_crm_ohjelmisto.md",
+      "fr_fr_gratuit_logiciel_erp_crm_open_source.md",
+      "hi_in_\u092e\u0941\u092b\u094d\u0924_\u0916\u0941\u0932\u093e_\u0938\u094d\u0930\u094b\u0924_\u0908\u0906\u0930\u092a\u0940_\u0938\u0940\u0906\u0930\u090f\u092e_\u0938\u0949\u092b\u093c\u094d\u091f\u0935\u0947\u092f\u0930.md",
+      "hr_hr_besplatni_otvoreni_izvor_erp_crm_softver.md",
+      "hu_hu_ingyenes_ny\u00edlt_forr\u00e1sk\u00f3d\u00fa_erp_crm_szoftver.md",
+      "id_id_perangkat_lunak_erp_crm_sumber_terbuka_gratis.md",
+      "it_it_software_erp_crm_open_source_gratuito.md",
+      "ja_jp_\u30d5\u30ea\u30fc\u30aa\u30fc\u30d7\u30f3\u30bd\u30fc\u30b9ERP CRM\u30bd\u30d5\u30c8\u30a6\u30a7\u30a2.md",
+      "ko_kr_\uc790\uc720_\uc624\ud508_\uc18c\uc2a4_ERP_CRM_\uc18c\ud504\ud2b8\uc6e8\uc5b4.md",
+      "lt_lt_nemokamas_atviras_kodo_erp_crm_programin\u0117_\u012franga.md",
+      "lv_lv_bezmaksas_atv\u0113rt\u0101_koda_erp_crm_programmat\u016bra.md",
+      "mk_mk_\u0444\u0440\u0435\u0435_\u043e\u043f\u0435\u043d_\u0441\u043e\u0440\u0441\u0435_\u0435\u0440\u043f_\u0446\u0440\u043c_\u0441\u043e\u0444\u0442\u0432\u0435\u0440.md",
+      "ms_my_fail_terbuka_sumber_erp_crm_perisian.md",
+      "nb_no_gratis_\u00e5pen_kilde_erp_crm_programvare.md",
+      "nl_nl_vrije_open_source_erp_crm_software.md",
+      "pl_pl_bezp\u0142atne_otwarte_\u017ar\u00f3d\u0142o_erp_crm_oprogramowanie.md",
+      "pt_br_software_de_erp_e_crm_de_c\u00f3digo_aberto_gratuito.md",
+      "pt_pt_software_de_erp_crm_de_c\u00f3digo_aberto_gratuito.md",
+      "ro_ro_software_erp_crm_open_source_gratuit.md",
+      "ru_ru_\u0431\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e\u0435_\u043e\u0442\u043a\u0440\u044b\u0442\u043e\u0435_\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u043d\u043e\u0435_\u043e\u0431\u0435\u0441\u043f\u0435\u0447\u0435\u043d\u0438\u0435_erp_crm.md",
+      "sk_sk_zdarma_otvorene_zdrojove_erp_crm_software.md",
+      "sl_si_brezpla\u010dni_odprtokodni_erp_crm_programski_oprema.md",
+      "sr_rs_besplatni_otvoreni_izvor_erp_crm_softver.md",
+      "sv_se_fri_\u00f6ppen_k\u00e4llkods_erp_crm_programvara.md",
+      "th_th_\u0e1f\u0e23\u0e35_\u0e42\u0e1b\u0e23\u0e41\u0e01\u0e23\u0e21_\u0e15\u0e31\u0e27\u0e08\u0e31\u0e14\u0e01\u0e32\u0e23\u0e41\u0e2b\u0e25\u0e48\u0e07\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e42\u0e1b\u0e23\u0e41\u0e01\u0e23\u0e21_ERP_CRM.md",
+      "tr_tr_\u00fccretsiz_a\u00e7\u0131k_kaynak_erp_crm_yaz\u0131l\u0131m\u0131.md",
+      "uk_ua_\u0431\u0435\u0437\u043a\u043e\u0448\u0442\u043e\u0432\u043d\u0435_\u0432\u0456\u0434\u043a\u0440\u0438\u0442\u0435_\u0434\u0436\u0435\u0440\u0435\u043b\u043e_erp_crm_\u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043d\u0435_\u0437\u0430\u0431\u0435\u0437\u043f\u0435\u0447\u0435\u043d\u043d\u044f.md",
+      "ur_pk_\u0645\u0641\u062a_\u06a9\u06be\u0648\u0644\u06cc\u06ba_\u0633\u0648\u0631\u0633_erp_crm_\u0633\u0627\u0641\u0679 \u0648\u06cc\u0626\u0631.md",
+      "vi_vn_ch\u01b0\u01a1ng_tr\u00ecnh_qu\u1ea3n_l\u00fd_doanh_nghi\u1ec7p_crm_ngu\u1ed3n_m\u1edf_mi\u1ec5n_ph\u00ed.md",
+      "zh_cn_\u514d\u8d39\u5f00\u6e90ERP CRM\u8f6f\u4ef6.md"
+    ]
+  },
+  "frontend": {
+    "__files__": [
+      ".env",
+      ".eslintrc.js",
+      ".gitignore",
+      ".prettierignore",
+      ".prettierrc",
+      "dev.json",
+      "filtered.json",
+      "index.html",
+      "jsconfig.json",
+      "package-lock.json",
+      "package.json",
+      "README.md",
+      "rollup.config.js",
+      "temp.env",
+      "vite.config.js"
+    ],
+    "public": {
+      "__files__": [
+        "robots.txt"
+      ]
+    },
+    "src": {
+      "apps": {
+        "__files__": [
+          "ErpApp.jsx",
+          "IdurarOs.jsx"
+        ],
+        "Header": {
+          "__files__": [
+            "HeaderContainer.jsx",
+            "UpgradeButton.jsx"
+          ]
+        },
+        "Navigation": {
+          "__files__": [
+            "NavigationContainer.jsx"
+          ]
+        }
+      },
+      "auth": {
+        "__files__": [
+          "auth.service.js",
+          "index.js"
+        ]
+      },
+      "components": {
+        "AutoCompleteAsync": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "CollapseBox": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "CreateForm": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "CrudModal": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "DataTable": {
+          "__files__": [
+            "DataTable.jsx"
+          ]
+        },
+        "DeleteModal": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "IconMenu": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "Loading": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "MoneyInputFormItem": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "MultiStepSelectAsync": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "NotFound": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "Notification": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "outsideClick.js": {
+          "__files__": [
+            "demo.js",
+            "index.js"
+          ]
+        },
+        "PageLoader": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "ReadItem": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "SearchItem": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "SelectAsync": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "SelectTag": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "SidePanel": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "TabsContent": {
+          "__files__": [
+            "TabsContent.jsx"
+          ]
+        },
+        "Tag": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "UpdateForm": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "Visibility": {
+          "__files__": [
+            "index.jsx"
+          ]
+        }
+      },
+      "config": {
+        "__files__": [
+          "serverApiConfig.js"
+        ]
+      },
+      "context": {
+        "adavancedCrud": {
+          "__files__": [
+            "actions.jsx",
+            "index.jsx",
+            "reducer.jsx",
+            "selectors.jsx",
+            "types.jsx"
+          ]
+        },
+        "appContext": {
+          "__files__": [
+            "actions.jsx",
+            "index.jsx",
+            "reducer.jsx",
+            "types.jsx"
+          ]
+        },
+        "crud": {
+          "__files__": [
+            "actions.jsx",
+            "index.jsx",
+            "reducer.jsx",
+            "selectors.jsx",
+            "types.jsx"
+          ]
+        },
+        "erp": {
+          "__files__": [
+            "actions.jsx",
+            "index.jsx",
+            "reducer.jsx",
+            "selectors.jsx",
+            "types.jsx"
+          ]
+        },
+        "profileContext": {
+          "__files__": [
+            "actions.jsx",
+            "index.jsx",
+            "reducer.jsx",
+            "selectors.jsx",
+            "types.jsx"
+          ]
+        }
+      },
+      "__files__": [
+        "favicon.ico",
+        "logo-icon.svg",
+        "main.jsx",
+        "RootApp.jsx"
+      ],
+      "forms": {
+        "__files__": [
+          "AdminForm.jsx",
+          "AdvancedSettingsForm.jsx",
+          "CurrencyForm.jsx",
+          "CustomerForm.jsx",
+          "EmployeeForm.jsx",
+          "ForgetPasswordForm.jsx",
+          "InventoryForm.jsx",
+          "LeadForm.jsx",
+          "LoginForm.jsx",
+          "OrderForm.jsx",
+          "PaymentForm.jsx",
+          "PaymentModeForm.jsx",
+          "RegisterForm.jsx",
+          "ResetPasswordForm.jsx",
+          "TaxForm.jsx",
+          "UpdateEmail.jsx"
+        ],
+        "DynamicForm": {
+          "__files__": [
+            "index.jsx"
+          ]
+        }
+      },
+      "hooks": {
+        "__files__": [
+          "useDebounce.jsx",
+          "useFetch.jsx",
+          "useMail.jsx",
+          "useNetwork.jsx",
+          "useOnFetch.jsx",
+          "useResponsive.jsx",
+          "useTimeoutFn.jsx"
+        ]
+      },
+      "layout": {
+        "AuthLayout": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "CrudLayout": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "DashboardLayout": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "DefaultLayout": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "ErpLayout": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "Footer": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "__files__": [
+          "index.jsx"
+        ],
+        "ProfileLayout": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "SettingsLayout": {
+          "__files__": [
+            "index.jsx"
+          ]
+        }
+      },
+      "locale": {
+        "__files__": [
+          "antdLocale.js",
+          "coreTranslation.js",
+          "Localization.jsx",
+          "useLanguage.jsx"
+        ],
+        "translation": {
+          "__files__": [
+            "en_us.js",
+            "otherTranslation.js",
+            "translation.js"
+          ]
+        }
+      },
+      "modules": {
+        "AuthModule": {
+          "__files__": [
+            "index.jsx",
+            "SideContent.jsx"
+          ]
+        },
+        "CrudModule": {
+          "__files__": [
+            "CrudModule.jsx"
+          ]
+        },
+        "DashboardModule": {
+          "components": {
+            "__files__": [
+              "CustomerPreviewCard.jsx",
+              "PreviewCard.jsx",
+              "SummaryCard.jsx"
+            ],
+            "RecentTable": {
+              "__files__": [
+                "index.jsx"
+              ]
+            }
+          },
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "ErpPanelModule": {
+          "__files__": [
+            "CreateItem.jsx",
+            "DataTable.jsx",
+            "DeleteItem.jsx",
+            "index.jsx",
+            "ItemRow.jsx",
+            "ReadItem.jsx",
+            "SearchItem.jsx",
+            "UpdateItem.jsx"
+          ]
+        },
+        "InvoiceModule": {
+          "CreateInvoiceModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "Forms": {
+            "__files__": [
+              "InvoiceForm.jsx"
+            ]
+          },
+          "InvoiceDataTableModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "ReadInvoiceModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "RecordPaymentModule": {
+            "components": {
+              "__files__": [
+                "Payment.jsx",
+                "RecordPayment.jsx"
+              ]
+            },
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "UpdateInvoiceModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          }
+        },
+        "PaymentModule": {
+          "PaymentDataTableModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "ReadPaymentModule": {
+            "components": {
+              "__files__": [
+                "ReadItem.jsx"
+              ]
+            },
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "UpdatePaymentModule": {
+            "components": {
+              "__files__": [
+                "Payment.jsx",
+                "UpdatePayment.jsx"
+              ]
+            },
+            "__files__": [
+              "index.jsx"
+            ]
+          }
+        },
+        "ProfileModule": {
+          "components": {
+            "__files__": [
+              "AdminInfo.jsx",
+              "PasswordModal.jsx",
+              "Profile.jsx",
+              "ProfileAdminForm.jsx",
+              "UpdateAdmin.jsx",
+              "UploadImg.jsx"
+            ]
+          },
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "QuoteModule": {
+          "CreateQuoteModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "Forms": {
+            "__files__": [
+              "QuoteForm.jsx"
+            ]
+          },
+          "QuoteDataTableModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "ReadQuoteModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "UpdateQuoteModule": {
+            "__files__": [
+              "index.jsx"
+            ]
+          }
+        },
+        "SettingModule": {
+          "CompanyLogoSettingsModule": {
+            "forms": {
+              "__files__": [
+                "AppSettingForm.jsx"
+              ]
+            },
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "CompanySettingsModule": {
+            "__files__": [
+              "index.jsx",
+              "SettingsForm.jsx"
+            ]
+          },
+          "components": {
+            "__files__": [
+              "SetingsSection.jsx",
+              "UpdateSettingForm.jsx",
+              "UpdateSettingModule.jsx"
+            ]
+          },
+          "FinanceSettingsModule": {
+            "__files__": [
+              "index.jsx",
+              "SettingsForm.jsx"
+            ]
+          },
+          "GeneralSettingsModule": {
+            "forms": {
+              "__files__": [
+                "GeneralSettingForm.jsx"
+              ]
+            },
+            "__files__": [
+              "index.jsx"
+            ]
+          },
+          "MoneyFormatSettingsModule": {
+            "__files__": [
+              "index.jsx",
+              "SettingsForm.jsx"
+            ]
+          }
+        }
+      },
+      "pages": {
+        "__files__": [
+          "About.jsx",
+          "Dashboard.jsx",
+          "ForgetPassword.jsx",
+          "Login.jsx",
+          "Logout.jsx",
+          "NotFound.jsx",
+          "Profile.jsx",
+          "ResetPassword.jsx"
+        ],
+        "Customer": {
+          "__files__": [
+            "config.js",
+            "index.jsx"
+          ]
+        },
+        "Invoice": {
+          "__files__": [
+            "index.jsx",
+            "InvoiceCreate.jsx",
+            "InvoiceRead.jsx",
+            "InvoiceRecordPayment.jsx",
+            "InvoiceUpdate.jsx"
+          ]
+        },
+        "Payment": {
+          "__files__": [
+            "index.jsx",
+            "PaymentRead.jsx",
+            "PaymentUpdate.jsx"
+          ]
+        },
+        "PaymentMode": {
+          "__files__": [
+            "index.jsx"
+          ]
+        },
+        "Quote": {
+          "__files__": [
+            "index.jsx",
+            "QuoteCreate.jsx",
+            "QuoteRead.jsx",
+            "QuoteUpdate.jsx"
+          ]
+        },
+        "Settings": {
+          "__files__": [
+            "CompanyLogoSettings.jsx",
+            "CompanySettings.jsx",
+            "FinanceSettings.jsx",
+            "GeneralSettings.jsx",
+            "MoneyFormatSettings.jsx",
+            "Settings.jsx"
+          ]
+        },
+        "Taxes": {
+          "__files__": [
+            "index.jsx"
+          ]
+        }
+      },
+      "redux": {
+        "adavancedCrud": {
+          "__files__": [
+            "actions.js",
+            "index.js",
+            "reducer.js",
+            "selectors.js",
+            "types.js"
+          ]
+        },
+        "auth": {
+          "__files__": [
+            "actions.js",
+            "index.js",
+            "reducer.js",
+            "selectors.js",
+            "types.js"
+          ]
+        },
+        "crud": {
+          "__files__": [
+            "actions.js",
+            "index.js",
+            "reducer.js",
+            "selectors.js",
+            "types.js"
+          ]
+        },
+        "erp": {
+          "__files__": [
+            "actions.js",
+            "index.js",
+            "reducer.js",
+            "selectors.js",
+            "types.js"
+          ]
+        },
+        "__files__": [
+          "rootReducer.js",
+          "store.js",
+          "storePersist.js"
+        ],
+        "settings": {
+          "__files__": [
+            "actions.js",
+            "index.js",
+            "reducer.js",
+            "selectors.js",
+            "types.js"
+          ]
+        }
+      },
+      "request": {
+        "__files__": [
+          "checkImage.js",
+          "codeMessage.js",
+          "errorHandler.js",
+          "index.js",
+          "request.js",
+          "successHandler.js"
+        ]
+      },
+      "router": {
+        "__files__": [
+          "AppRouter.jsx",
+          "AuthRouter.jsx",
+          "routes.jsx"
+        ]
+      },
+      "settings": {
+        "__files__": [
+          "index.jsx",
+          "useDate.jsx",
+          "useMoney.jsx"
+        ]
+      },
+      "style": {
+        "__files__": [
+          "app.css"
+        ],
+        "images": {
+          "__files__": [
+            "checklist.svg",
+            "fitbit-gray.svg",
+            "flow-xo-gray.svg",
+            "gitlab-gray.svg",
+            "idurar-crm-erp.svg",
+            "layar-gray.svg",
+            "logo-icon.png",
+            "logo-icon.svg",
+            "logo-menu.png",
+            "logo-text.png",
+            "logo-text.svg",
+            "logo.png",
+            "logo.svg",
+            "logo1.png",
+            "logo2.png",
+            "logo3.png",
+            "logo4.png",
+            "photo.png"
+          ]
+        },
+        "partials": {
+          "__files__": [
+            "auth.css",
+            "collapseBox.css",
+            "core.css",
+            "customAntd.css",
+            "erp.css",
+            "header.css",
+            "layout.css",
+            "navigation.css",
+            "rest.css",
+            "sidePanel.css",
+            "transition.css"
+          ]
+        }
+      },
+      "utils": {
+        "__files__": [
+          "calculate.js",
+          "color.js",
+          "countryList.js",
+          "currencyList.js",
+          "dataStructure.jsx",
+          "helpers.js",
+          "isBrowser.js",
+          "statusTagColor.js",
+          "tagColor.js",
+          "valueType.js"
+        ]
+      }
+    }
+  }
+}
