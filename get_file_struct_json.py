@@ -32,7 +32,7 @@ def build_file_tree(base_path, depth=4):
 
 if __name__ == "__main__":
     # CHANGE THIS TO YOUR ABSOLUTE PATH
-    base_path = "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm"
+    base_path = os.getenv("CODEBASE_PATH")
     tree = build_file_tree(base_path, depth=6)
     
     # Output to a clean JSON
