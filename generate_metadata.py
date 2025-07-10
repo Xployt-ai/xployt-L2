@@ -5,14 +5,21 @@ import re
 from pathlib import Path
 from typing import Dict, Any
 
+# Third-party
 from dotenv import load_dotenv
 from openai import OpenAI
 
 # --------------------------
+# Paths & directories
+# --------------------------
+DATA_DIR = Path("data")
+DATA_DIR.mkdir(exist_ok=True)
+
+# --------------------------
 # Config / constants
 # --------------------------
-SELECTION_FILE = "vuln_files_selection.json"
-OUTPUT_FILE = "vuln_file_metadata.json"
+SELECTION_FILE = DATA_DIR / "vuln_files_selection.json"
+OUTPUT_FILE = DATA_DIR / "vuln_file_metadata.json"
 BACKEND_ANCHOR = os.sep + "backend" + os.sep
 FRONTEND_ANCHOR = os.sep + "frontend" + os.sep
 
@@ -108,9 +115,9 @@ def load_selection() -> list[str]:
 
 
 def load_existing_metadata() -> Dict[str, Dict[str, Any]]:
-    if not os.path.exists(OUTPUT_FILE):
+    if not OUTPUT_FILE.exists():
         return {}
-    with open(OUTPUT_FILE, "r", encoding="utf-8") as f:
+    with OUTPUT_FILE.open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -177,7 +184,7 @@ def main(base_dir: str = ".") -> None:
         existing[rel_path] = entry
         print(f"✅ processed {rel_path}")
 
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+    with OUTPUT_FILE.open("w", encoding="utf-8") as f:
         json.dump(existing, f, indent=2)
 
     print(f"\n🎉 Metadata written to {OUTPUT_FILE} (total {len(existing)} entries)")

@@ -1,5 +1,6 @@
 import os
 import json
+from pathlib import Path
 
 EXCLUDE_DIRS = {
     "node_modules", ".git", ".next", "dist", "build", "__pycache__",
@@ -35,8 +36,12 @@ if __name__ == "__main__":
     base_path = os.getenv("CODEBASE_PATH")
     tree = build_file_tree(base_path, depth=6)
     
-    # Output to a clean JSON
-    with open("file_tree.json", "w", encoding="utf-8") as f:
+    # Ensure data directory exists
+    data_dir = Path("data")
+    data_dir.mkdir(exist_ok=True)
+
+    output_path = data_dir / "file_tree.json"
+    with output_path.open("w", encoding="utf-8") as f:
         json.dump(tree, f, indent=2)
 
-    print("✅ File structure saved to file_tree.json")
+    print(f"✅ File structure saved to {output_path}")

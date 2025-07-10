@@ -2,8 +2,13 @@ import os
 import json
 from dotenv import load_dotenv
 from openai import OpenAI
+from pathlib import Path
 
-def load_file_structure(file_path="file_structure.json"):
+# Central data directory
+DATA_DIR = Path("data")
+DATA_DIR.mkdir(exist_ok=True)
+
+def load_file_structure(file_path=DATA_DIR / "file_tree.json"):
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -41,8 +46,8 @@ if __name__ == "__main__":
 
     result = ask_openai_for_vuln_analysis(file_tree)
 
-    with open("vuln_files_selection.json", "w", encoding="utf-8") as f:
+    with (DATA_DIR / "vuln_files_selection.json").open("w", encoding="utf-8") as f:
         f.write(result)
 
-    print("✅ Saved OpenAI response to 'vuln_files_selection.json'")
+    print("✅ Saved OpenAI response to data/vuln_files_selection.json")
     print(result)
