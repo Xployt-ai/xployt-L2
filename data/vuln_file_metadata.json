@@ -1,0 +1,377 @@
+{
+  "/backend/src/controllers": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/emailTemplate": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/handlers": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/locale": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/middlewares": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/models": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/routes": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/settings": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/setup": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/backend/src/utils": {
+    "kind": "dir",
+    "side": "backend",
+    "description": ""
+  },
+  "/frontend/src/apps": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/auth": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/components": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/config": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/context": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/forms": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/hooks": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/layout": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/locale": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/modules": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/pages": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/redux": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/request": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/router": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/settings": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/frontend/src/utils": {
+    "kind": "dir",
+    "side": "frontend",
+    "description": ""
+  },
+  "/backend/src/app.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 53,
+    "imports": [],
+    "description": "The provided file sets up an Express.js application that includes middleware for handling CORS, cookie parsing, JSON and URL-encoded request bodies, and response compression. It defines several API routes for authentication, data access, file downloads, and public access, while also implementing error handling for 404 and production errors. Security-critical behaviors include the use of `adminAuth.isValidAuthToken` to validate authentication tokens for certain routes, which is essential for protecting sensitive endpoints.",
+    "sha1": "1d8aa20cdf8f5d6e194f92ea3d379a6c3033cc8e",
+    "token_estimate": 373
+  },
+  "/backend/src/helpers.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 61,
+    "imports": [],
+    "description": "The file provides a set of helper functions and constants for a templating system, including functions for reading SVG and JPG images from the file system, formatting date ranges, and performing currency calculations. A security-critical behavior is the use of `fs.readFileSync` to read files based on user input, which could lead to directory traversal vulnerabilities if not properly sanitized.",
+    "sha1": "f302ab241312d5fd9bab3702daa43198ea45da9d",
+    "token_estimate": 425
+  },
+  "/backend/src/server.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 40,
+    "imports": [],
+    "description": "The file sets up a Node.js application by checking the Node.js version, loading environment variables from `.env` files, and connecting to a MongoDB database using Mongoose. It also imports model files dynamically and starts an Express server on a specified port. Security-critical behaviors include the reliance on environment variables for sensitive information like the database URL and OpenAI API key, which could be exposed if the `.env` files are not properly secured.",
+    "sha1": "6ae28f3701ca8a7196f88ab45f5fa85c476e0116",
+    "token_estimate": 297
+  },
+  "/backend/.env": {
+    "kind": "file",
+    "side": "backend",
+    "language": "",
+    "loc": 8,
+    "imports": [],
+    "description": "The file appears to be a configuration file for an application, containing settings for database connection, API keys, and environment variables. Notably, it includes a private JWT secret key, which is critical for securing JSON Web Tokens and should be protected to prevent unauthorized access to the application.",
+    "sha1": "4bff93ddd2e39e23703572502dd0d024bba64359",
+    "token_estimate": 63
+  },
+  "/backend/.eslintrc.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 16,
+    "imports": [],
+    "description": "This file is a configuration for ESLint, a tool used to identify and fix problems in JavaScript code. It sets the environment for both browser and Node.js, extends the recommended ESLint rules, and allows the use of console statements by disabling the 'no-console' rule. There are no explicit security-critical behaviors in this configuration, but allowing console statements may expose sensitive information if not managed properly.",
+    "sha1": "c204266a921b2674bec2ca1d037ef89bb94bda65",
+    "token_estimate": 58
+  },
+  "/backend/deps.json": {
+    "kind": "file",
+    "side": "backend",
+    "language": "json",
+    "loc": 225,
+    "imports": [],
+    "description": "The provided file outlines the structure of a Node.js application, detailing various controllers, routes, and handlers that manage functionalities such as authentication, invoicing, payments, and quotes. It organizes the application into modular components, allowing for better maintainability and scalability. Security-critical behaviors may include the handling of user authentication in the `adminAuth` controller and the potential exposure of sensitive data through the invoice and payment functionalities, which necessitate careful validation and access control measures.",
+    "sha1": "52075675f7912012603705ad11ba00972a321daf",
+    "token_estimate": 2817
+  },
+  "/backend/jsconfig.json": {
+    "kind": "file",
+    "side": "backend",
+    "language": "json",
+    "loc": 10,
+    "imports": [],
+    "description": "The file is a TypeScript configuration file (`tsconfig.json`) that specifies compiler options, including the base URL for module resolution and path mappings to simplify imports. It also excludes the `node_modules` directory from the compilation process. There are no apparent security-critical behaviors in this configuration, as it primarily focuses on project structure and module resolution.",
+    "sha1": "3f423286c8ea95c2d33194afa27e11885003eb17",
+    "token_estimate": 32
+  },
+  "/backend/package-lock.json": {
+    "kind": "file",
+    "side": "backend",
+    "language": "json",
+    "loc": 7457,
+    "imports": [],
+    "description": "The file is a package manifest for a Node.js application named \"idurar-erp-crm\" version 4.1.0, which specifies its dependencies, development dependencies, and required Node.js and npm versions. It includes various libraries for functionalities such as file uploads, JSON web token handling, and AWS SDK integration. Security-critical behaviors include the use of `bcryptjs` for password hashing, `jsonwebtoken` for authentication, and `cookie-parser` for handling cookies, which necessitate careful management to prevent vulnerabilities like injection attacks and session hijacking.",
+    "sha1": "f7cf968d6d15e539ddb3980e287e170692549d2e",
+    "token_estimate": 70623
+  },
+  "/backend/package.json": {
+    "kind": "file",
+    "side": "backend",
+    "language": "json",
+    "loc": 64,
+    "imports": [],
+    "description": "The file is a package configuration for the \"idurar-erp-crm\" application, specifying its dependencies, scripts for starting and managing the application, and metadata such as the author and repository information. It includes several security-critical behaviors, such as the use of `bcryptjs` for password hashing, `jsonwebtoken` for authentication, and `express-rate-limit` to mitigate brute-force attacks, which are essential for protecting user data and application integrity.",
+    "sha1": "594749d8b48d53631710fd2843ecd06eb01f0732",
+    "token_estimate": 404
+  },
+  "/frontend/index.html": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "html",
+    "loc": 19,
+    "imports": [],
+    "description": "The provided HTML file serves as the main entry point for a web application called \"IDURAR ERP CRM,\" which is an open-source accounting and invoicing system built using Node.js, React.js, Ant Design, and Redux. It includes essential metadata for the application, such as character set, viewport settings, and a favicon, while loading the main JavaScript module from \"main.jsx\" to render the application. Security-critical behavior includes the use of a script tag to load external JavaScript, which could potentially expose the application to cross-site scripting (XSS) attacks if not properly sanitized.",
+    "sha1": "08cb023960f9784c802d7e1b05b2889de76e9d82",
+    "token_estimate": 146
+  },
+  "/frontend/dev.json": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "json",
+    "loc": 110,
+    "imports": [],
+    "description": "The provided file outlines the structure of a JavaScript application, primarily focused on authentication, Redux state management, and various utility functions. It includes modules for handling authentication, CRUD operations, localization, and API configuration. Security-critical behavior may arise from the authentication modules, as they likely manage user credentials and session management, which require careful handling to prevent vulnerabilities such as unauthorized access or data leaks.",
+    "sha1": "f77f2a64ffecae3febb26b67d9837a1e3561b955",
+    "token_estimate": 676
+  },
+  "/frontend/filtered.json": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "json",
+    "loc": 1,
+    "imports": [],
+    "description": "It seems that the content of the file you intended to share is missing. Please provide the file or its contents so I can summarize its functionality and identify any security-critical behavior.",
+    "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "token_estimate": 1
+  },
+  "/frontend/jsconfig.json": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "json",
+    "loc": 10,
+    "imports": [],
+    "description": "The file is a TypeScript configuration file (`tsconfig.json`) that specifies compiler options, including the base URL for module resolution and path mapping for easier imports. It also excludes the `node_modules` and `dist` directories from the compilation process. There are no explicit security-critical behaviors in this configuration, but improper handling of paths could lead to potential issues if not managed correctly in the broader application context.",
+    "sha1": "06d11eb4342fc6dbf266a559d196d5236db88a9f",
+    "token_estimate": 34
+  },
+  "/frontend/package-lock.json": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "json",
+    "loc": 7271,
+    "imports": [],
+    "description": "The provided file is a package manifest for a project named \"idurar-erp-crm,\" version 4.1.0, which lists its dependencies and development dependencies, including libraries for React, Redux, and Ant Design. It specifies the required Node.js and npm versions and includes integrity checks for some packages to ensure their authenticity. Security-critical behavior includes the use of external libraries, such as Axios for HTTP requests, which could introduce vulnerabilities if not properly managed, especially regarding data handling and user input.",
+    "sha1": "eaeb182e20985858372747f9dc9ce180ab0c848f",
+    "token_estimate": 65232
+  },
+  "/frontend/package.json": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "json",
+    "loc": 48,
+    "imports": [],
+    "description": "The file is a package configuration for a project named \"idurar-erp-crm,\" specifying its version, required Node.js and npm versions, dependencies, development dependencies, and scripts for development, building, and linting. It includes various libraries for React, state management, and UI components, indicating a focus on building a web application. Security-critical behavior may arise from the use of dependencies like \"axios\" for making HTTP requests, which could expose the application to vulnerabilities if not properly managed, such as handling sensitive data or preventing cross-site scripting (XSS) attacks.",
+    "sha1": "45b9216dcdb098af4b101160e7368cd1f1e651fb",
+    "token_estimate": 313
+  },
+  "/frontend/README.md": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "md",
+    "loc": 69,
+    "imports": [],
+    "description": "The file outlines the setup and available scripts for a React application created using Create React App, detailing commands for starting the development server, running tests, building the application for production, and ejecting the configuration. A security-critical behavior is the `yarn eject` command, which exposes the project's configuration files and dependencies, potentially increasing the risk of misconfiguration and security vulnerabilities if not managed properly.",
+    "sha1": "d2eb060e5d55d9815b5f9513e5720952d77361c6",
+    "token_estimate": 718
+  },
+  "/frontend/rollup.config.js": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "js",
+    "loc": 14,
+    "imports": [
+      "dynamicImportVars"
+    ],
+    "description": "The provided file configures a Rollup build process to use the `@rollup/plugin-dynamic-import-vars` plugin, which allows for dynamic imports of modules based on variable paths. The commented-out `importModule` function indicates that it could import any module based on the provided path, which raises security concerns as it may allow for arbitrary code execution if the input path is not properly validated or sanitized.",
+    "sha1": "87a05d95b78d407f7be8821e7c9cace2842e99dd",
+    "token_estimate": 67
+  },
+  "/frontend/temp.env": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "env",
+    "loc": 2,
+    "imports": [],
+    "description": "The file sets an environment variable `VITE_BACKEND_SERVER` to specify the URL of a remote backend server that the frontend application will connect to. This configuration is crucial for the application's functionality, but it also poses a security risk if the backend server URL is exposed or improperly validated, potentially leading to vulnerabilities such as cross-site scripting (XSS) or data leakage.",
+    "sha1": "60744fe48b92294b8520cdf66a9efa156a5082d1",
+    "token_estimate": 28
+  },
+  "/frontend/vite.config.js": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "js",
+    "loc": 35,
+    "imports": [
+      "path",
+      "react"
+    ],
+    "description": "The provided file is a Vite configuration script for a React application that sets up a development server with a proxy for API requests. It dynamically determines the backend server URL based on environment variables and configures the server to run on port 3000, with a proxy that forwards requests from `/api` to the specified backend. A security-critical behavior is the use of `secure: false` in the proxy configuration, which allows for insecure connections and could expose the application to man-in-the-middle attacks.",
+    "sha1": "b168cebb8b0dbd865752084a796dfda8c86d9f19",
+    "token_estimate": 181
+  },
+  "/frontend/.env": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "",
+    "loc": 5,
+    "imports": [],
+    "description": "The file defines configuration variables for a project, including a base URL for file access and a backend server URL, with a flag indicating that the environment is not in production. The use of hardcoded URLs, especially for the backend server, can pose security risks if sensitive information or endpoints are exposed, particularly in a production environment.",
+    "sha1": "423793090f7081ee47a4481766f1af8606f875f1",
+    "token_estimate": 36
+  },
+  "/frontend/.eslintrc.js": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "js",
+    "loc": 19,
+    "imports": [],
+    "description": "The provided file is an ESLint configuration for a JavaScript project using React, which sets up the environment, extends recommended linting rules, and specifies parser options. It includes custom rules for handling React components and disables prop-type validation. There are no explicit security-critical behaviors in the configuration itself, but improper linting could lead to vulnerabilities if code quality is not maintained.",
+    "sha1": "182fbc6ba85ad12cb65bb997ab4c9bc61e59e79a",
+    "token_estimate": 134
+  },
+  "/frontend/.gitignore": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "",
+    "loc": 25,
+    "imports": [],
+    "description": "The file is a `.gitignore` configuration that specifies which files and directories should be ignored by Git in a project, including dependencies, testing outputs, production builds, and miscellaneous files. Notably, it includes environment variable files (e.g., `.env.local`), which may contain sensitive information such as API keys or database credentials, highlighting a security-critical behavior by ensuring these files are not tracked in version control.",
+    "sha1": "cfaec81a4a7149d72bd3964cf375fb4075ca5bf4",
+    "token_estimate": 78
+  },
+  "/frontend/.prettierignore": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "",
+    "loc": 5,
+    "imports": [],
+    "description": "The file specifies a list of directories and files to be ignored by version control, typically in a `.gitignore` format, which helps to prevent unnecessary files from being tracked in a repository. This includes build artifacts, coverage reports, and dependencies, which can help maintain a clean project structure. There are no explicit security-critical behaviors in this file, but ignoring sensitive files or directories is crucial to prevent accidental exposure of sensitive information.",
+    "sha1": "53306be24b6c278af0749da493954738d5a781ec",
+    "token_estimate": 14
+  },
+  "/frontend/.prettierrc": {
+    "kind": "file",
+    "side": "frontend",
+    "language": "",
+    "loc": 8,
+    "imports": [],
+    "description": "The file is a configuration for a code formatter, likely Prettier, which specifies formatting rules such as a maximum line width of 100 characters, the use of trailing commas in ES5-compatible syntax, a tab width of 2 spaces, mandatory semicolons, and the use of single quotes for strings. There are no apparent security-critical behaviors in this configuration file, as it primarily focuses on code style rather than execution or data handling.",
+    "sha1": "e34ade7bd247d727e0ffc255dbc573f5449fb89d",
+    "token_estimate": 27
+  }
+}

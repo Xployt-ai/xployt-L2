@@ -1,6 +1,9 @@
 import os
 import json
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 EXCLUDE_DIRS = {
     "node_modules", ".git", ".next", "dist", "build", "__pycache__",
