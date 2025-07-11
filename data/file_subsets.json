@@ -1,0 +1,282 @@
+[
+  {
+    "subset_id": "subset-001",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.DS_Store"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-002",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/CODEOWNERS"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-003",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/codesee-arch-diagram.yml"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-004",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/github-repo-stats.yml"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-005",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.env"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-006",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.eslintrc.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-007",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.gitignore"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-008",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.prettierignore"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-009",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.prettierrc"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-010",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/deps.json"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-011",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/jsconfig.json"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-012",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/package.json"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-013",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/app.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-014",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/index.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-015",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/summary.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-016",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/index.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-017",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/create.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-018",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/index.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-019",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/paginatedList.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-020",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/read.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-021",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/remove.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-022",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/schemaValidate.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-023",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/sendMail.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-024",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/summary.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-025",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/update.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-026",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/create.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-027",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/index.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-028",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/remove.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-029",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/sendMail.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-030",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/summary.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-031",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/update.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-032",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentModeController/index.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-033",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/convertQuoteToInvoice.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-034",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/create.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-035",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/index.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-036",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/paginatedList.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-037",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/read.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-038",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/sendMail.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-039",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/helpers.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  },
+  {
+    "subset_id": "subset-040",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/server.js"
+    ],
+    "reason": "No connectivity \u2013 treated as standalone"
+  }
+]

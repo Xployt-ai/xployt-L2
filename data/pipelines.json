@@ -1,0 +1,72 @@
+{
+  "pipelines": [
+    {
+      "pipeline_name": "Injection Checker",
+      "pipeline_id": "pipeline_injection",
+      "target_vulnerabilities": ["SQL Injection", "NoSQL Injection", "Command Injection"],
+      "description": "Detects injection-type vulnerabilities across stack layers.",
+      "stages": [
+        {
+          "id": "vuln_scan",
+          "title": "Vulnerability Scan",
+          "prompt_template": "Analyze the following code for potential security vulnerabilities.",
+          "inject_previous_output": false,
+          "save_output": true,
+          "output_tag": "vuln_report"
+        },
+        {
+          "id": "vuln_filter",
+          "title": "OWASP Filtering",
+          "prompt_template": "From the following findings, extract only those related to the OWASP Top 10.",
+          "inject_previous_output": true,
+          "input_tag": "vuln_report",
+          "save_output": true,
+          "output_tag": "owasp_only"
+        },
+        {
+          "id": "remediation",
+          "title": "Remediation Suggestions",
+          "prompt_template": "Suggest remediations for the OWASP vulnerabilities listed below.",
+          "inject_previous_output": true,
+          "input_tag": "owasp_only",
+          "save_output": true,
+          "output_tag": "remediation_suggestions"
+        }
+      ]
+    },
+    {
+      "pipeline_name": "Auth Flow Audit",
+      "pipeline_id": "pipeline_auth",
+      "target_vulnerabilities": ["Broken Auth", "IDOR", "Session Hijacking"],
+      "description": "Audits authentication & authorization mechanisms.",
+      "stages": [
+        {
+          "id": "auth_map",
+          "title": "Auth Flow Mapping",
+          "prompt_template": "Describe the authentication and authorization flow in the following code.",
+          "inject_previous_output": false,
+          "save_output": true,
+          "output_tag": "auth_flow"
+        },
+        {
+          "id": "auth_issues",
+          "title": "Auth Vulnerability Detection",
+          "prompt_template": "From the described auth flow, identify potential security weaknesses.",
+          "inject_previous_output": true,
+          "input_tag": "auth_flow",
+          "save_output": true,
+          "output_tag": "auth_vulns"
+        },
+        {
+          "id": "auth_remedy",
+          "title": "Remediation Suggestions",
+          "prompt_template": "Suggest remediations for the identified auth vulnerabilities.",
+          "inject_previous_output": true,
+          "input_tag": "auth_vulns",
+          "save_output": true,
+          "output_tag": "remediation_suggestions"
+        }
+      ]
+    }
+  ]
+}

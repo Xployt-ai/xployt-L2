@@ -111,6 +111,9 @@ def summarise_file(path: Path, client: OpenAI) -> str:
 def load_selection() -> list[str]:
     with open(SELECTION_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
+    if "files_to_analyze" in data:
+        return data["files_to_analyze"]
+    # legacy format
     return data.get("folders_to_analyze", []) + data.get("standalone_files", [])
 
 
@@ -131,7 +134,24 @@ def main(base_dir: str = ".") -> None:
         if env_base:
             base_dir = env_base
 
-    paths = load_selection()
+    # Load initial selection (folders + files) and expand folders to individual files
+    raw_paths = load_selection()
+    paths: list[str] = []
+
+    for p in raw_paths:
+        full = Path(base_dir).joinpath(p.lstrip("/\\"))
+        if full.is_dir():
+            for child in full.rglob("*"):
+                if child.is_file():
+                    rel_child = str(child.relative_to(base_dir)).replace("\\", "/")
+                    paths.append(rel_child)
+        else:
+            paths.append(p)
+
+    # Deduplicate while preserving order
+    seen_set = set()
+    paths = [x for x in paths if not (x in seen_set or seen_set.add(x))]
+
     # Optional limit from .env to process only a subset (useful for testing / cost control)
     max_files_raw = os.getenv(ENV_MAX_FILES)
     max_files: int | None = int(max_files_raw) if (max_files_raw and max_files_raw.isdigit()) else None
@@ -149,13 +169,7 @@ def main(base_dir: str = ".") -> None:
             continue
 
         if full_path.is_dir():
-            # For now just store minimal info; you could later aggregate child summaries
-            entry = {
-                "kind": "dir",
-                "side": detect_side(full_path),
-                "description": existing.get(rel_path, {}).get("description", ""),
-            }
-            existing[rel_path] = entry
+            # Skip directory entries now; they were expanded to files earlier
             continue
 
         # --- file ---
