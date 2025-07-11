@@ -3,7 +3,7 @@ import json
 import hashlib
 import re
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 # Third-party
 from dotenv import load_dotenv
@@ -84,19 +84,61 @@ def estimate_tokens(char_count: int) -> int:
     return int(char_count / TOKEN_CHARS_PER_TOKEN) + 1
 
 
-def summarise_file(path: Path, client: OpenAI) -> str:
-    """Call the LLM to get a 2-3 sentence summary."""
+def summarise_and_imports(path: Path, client: OpenAI) -> Tuple[str, list[str]]:
+    """Ask the LLM for a JSON object containing summary and list of imports."""
     try:
         with path.open("r", encoding="utf-8", errors="ignore") as f:
-            code = f.read(4000)  # send at most 4k chars to save tokens
+            code = f.read(4000)
     except Exception:
         code = ""
 
     prompt = (
-        "You are a senior engineer. Summarise what the following file does in 2-3 "
-        "sentences and mention any security-critical behaviour. Return only the summary." )
+        "You are a senior software security engineer. Given the following source code, "
+        "produce a concise 2-3 sentence summary highlighting what the file does and any "
+        "security-critical behaviour. Additionally, extract a JSON array named 'imports' "
+        "containing the names of all modules/packages that the file explicitly imports. "
+        "Return STRICTLY a JSON object with keys 'summary' and 'imports'.\n\nCode:\n```\n"
+        + code + "\n```"
+    )
 
-    response = client.chat.completions.create(
+    try:
+        resp = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a senior engineer."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.2,
+            max_tokens=200,
+        )
+        content = resp.choices[0].message.content.strip()
+        data = json.loads(content)
+        summary = data.get("summary", "")
+        imports = data.get("imports", [])
+        if isinstance(summary, str) and isinstance(imports, list):
+            imports = [str(i) for i in imports]
+            return summary, imports
+    except Exception:
+        pass  # will fall back
+
+    # Fallback: separate extraction
+    return summarise_file(path, client), extract_imports(path)
+
+
+# Retain original summarise_file for fallback purposes
+def summarise_file(path: Path, client: OpenAI) -> str:
+    try:
+        with path.open("r", encoding="utf-8", errors="ignore") as f:
+            code = f.read(4000)
+    except Exception:
+        code = ""
+
+    prompt = (
+        "You are a senior engineer. Summarise what the following file does in 2-3 sentences, "
+        "mentioning any security-critical behaviour. Return ONLY the summary text."
+    )
+
+    resp = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are a senior engineer."},
@@ -105,7 +147,7 @@ def summarise_file(path: Path, client: OpenAI) -> str:
         temperature=0.2,
         max_tokens=120,
     )
-    return response.choices[0].message.content.strip()
+    return resp.choices[0].message.content.strip()
 
 
 def load_selection() -> list[str]:
@@ -178,9 +220,10 @@ def main(base_dir: str = ".") -> None:
         needs_summary = prev.get("sha1") != sha1 or "description" not in prev
 
         if needs_summary:
-            description = summarise_file(full_path, client)
+            description, imports = summarise_and_imports(full_path, client)
         else:
             description = prev["description"]
+            imports = prev.get("imports", extract_imports(full_path))
 
         contents = full_path.read_text(encoding="utf-8", errors="ignore")
         char_count = len(contents)
@@ -190,7 +233,7 @@ def main(base_dir: str = ".") -> None:
             "side": detect_side(full_path),
             "language": detect_language(full_path),
             "loc": contents.count("\n") + 1,
-            "imports": extract_imports(full_path),
+            "imports": imports,
             "description": description,
             "sha1": sha1,
             "token_estimate": estimate_tokens(char_count),
