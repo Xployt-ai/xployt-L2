@@ -12,7 +12,9 @@ from openai import OpenAI
 # --------------------------
 # Paths & directories
 # --------------------------
-DATA_DIR = Path("data")
+version = os.getenv("VERSION")
+data_dir_name = f"{version}_data" if version else "data"
+DATA_DIR = Path(data_dir_name)
 DATA_DIR.mkdir(exist_ok=True)
 
 # --------------------------

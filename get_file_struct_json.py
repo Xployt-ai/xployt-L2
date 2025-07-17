@@ -40,7 +40,9 @@ if __name__ == "__main__":
     tree = build_file_tree(base_path, depth=6)
     
     # Ensure data directory exists
-    data_dir = Path("data")
+    version = os.getenv("VERSION")
+    data_dir_name = f"{version}_data" if version else "data"
+    data_dir = Path(data_dir_name)
     data_dir.mkdir(exist_ok=True)
 
     output_path = data_dir / "file_tree.json"

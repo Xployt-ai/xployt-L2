@@ -6,11 +6,17 @@ from typing import List
 from dotenv import load_dotenv
 from openai import OpenAI
 
-DATA_DIR = Path("data")
+load_dotenv()
+
+version = os.getenv("VERSION")
+data_dir_name = f"{version}_data" if version else "data"
+DATA_DIR = Path(data_dir_name)
 SUBSETS_FILE = DATA_DIR / "file_subsets.json"
-PIPELINES_DEF = DATA_DIR / "pipelines.json"
 METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
 OUTPUT_FILE = DATA_DIR / "subset_pipeline_suggestions.json"
+
+CONFIG_DIR = Path("config")
+PIPELINES_DEF = CONFIG_DIR / "pipelines.json"
 
 # ---------------------------
 # Utilities

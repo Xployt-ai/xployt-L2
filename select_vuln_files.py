@@ -14,8 +14,13 @@ EXCLUDE_DIRS = {
 }
 
 # Central data directory
-DATA_DIR = Path("data")
+version = os.getenv("VERSION")
+data_dir_name = f"{version}_data" if version else "data"
+DATA_DIR = Path(data_dir_name)
 DATA_DIR.mkdir(exist_ok=True)
+
+# Maximum number of file paths to include in the LLM prompt.  
+SELECT_VUL_FILES_LIMIT = int(os.getenv("SELECT_VUL_FILES_LIMIT", "30"))
 
 def load_file_structure(file_path=DATA_DIR / "file_tree.json"):
     with open(file_path, "r", encoding="utf-8") as f:
@@ -65,10 +70,7 @@ def regex_pre_filter(files: list[str]) -> list[str]:
 
 def filter_files_with_llm(files: list[str]) -> list[str]:
     """Ask the LLM to pick only files likely to contain security-relevant logic."""
-    print("⚙️  Running LLM filter (may be skipped if key missing or repo small)…")
-    if len(files) <= 120:  # heuristic: for small repos keep all
-        print("ℹ️  Small repository detected – skipping LLM filter.")
-        return files
+    print("⚙️  Running LLM filter (may be skipped if key missing)")
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     if not client.api_key:
@@ -76,7 +78,8 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
         return files
 
     # To control tokens, send at most first 400 file paths, then mention count.
-    head = files[:400]
+    print(f"ℹ️  Sending {SELECT_VUL_FILES_LIMIT} files to LLM for filtering")
+    head = files[:SELECT_VUL_FILES_LIMIT]
     remainder = len(files) - len(head)
     file_block = "\n".join(head)
     if remainder:
@@ -99,7 +102,7 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
                 {"role": "user", "content": prompt},
             ],
             temperature=0.2,
-            max_tokens=300,
+            # max_tokens=300,
         )
         content = resp.choices[0].message.content.strip()
         selected = json.loads(content)
