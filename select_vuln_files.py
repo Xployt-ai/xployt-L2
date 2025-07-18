@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
 import re
+import traceback
 
 load_dotenv()
 
@@ -85,33 +86,53 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
     if remainder:
         file_block += f"\n… and {remainder} more files"
 
+    # Use a verbose multiline prompt for clarity
     prompt = (
-        "As a senior application security engineer, your task is to review the following file paths from a MERN-stack project and select only those that are likely to contain security-sensitive code or configurations. "
-        "Focus on identifying backend controllers, route handlers, services, database models, authentication logic, environment loaders, shell scripts, and custom middleware as potential areas of interest. "
-        "Strictly avoid static assets, images, generated code, test files, README, license, and build artifacts. "
-        "Provide a JSON array of the chosen file paths (exact strings). "
-        "Aim to list between 5% and 30% of the files, prioritizing those most likely to contain vulnerabilities.\n\n"
-        "Files:\n" + file_block
+        "You are a senior application security engineer. Your task: review the list of file paths that follow and select ONLY those paths likely to hold vulnerabilities or configuration.\n\n"
+        "Guidelines (follow ALL):\n"
+        "1. INCLUDE: backend controllers, route handlers, services, DB models, authentication logic, env loaders, shell scripts, custom middleware.\n"
+        "2. EXCLUDE: static assets, images, generated code, test files, docs (README / LICENSE / *.md), build artifacts.\n"
+        "3. Return only the provided paths, focusing on the most risky ones.\n"
+        "4. OUTPUT FORMAT: JSON array of strings ONLY – *no* keys, comments, or code fences. Do NOT wrap in triple backticks.\n"
+        "5. EXACTLY reproduce the selected paths as they appear (do not modify slashes, case, etc.).\n\n"
+        "Example output (for illustration only – do NOT repeat this text):\n"
+        "[\n"
+        "  \"backend/controllers/auth.js\",\n"
+        "  \"backend/models/userModel.js\"\n"
+        "]\n\n"
+        "---\n"
+        "FILES TO REVIEW:\n" + file_block
     )
 
+    raw_content: str | None = None
     try:
         resp = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are a senior security auditor."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.2,
-            # max_tokens=300,
         )
-        content = resp.choices[0].message.content.strip()
-        selected = json.loads(content)
+        raw_content = resp.choices[0].message.content.strip()
+
+        # Remove optional ```json fences the model may add despite instructions
+        if raw_content.startswith("```"):
+            raw_content = re.sub(r"^```json\s*|^```|```$", "", raw_content, flags=re.S).strip()
+
+        selected = json.loads(raw_content)
         if isinstance(selected, list) and all(isinstance(x, str) for x in selected):
             print(f"✅ LLM filter selected {len(selected)} files from {len(files)}")
             return selected
-    except Exception:
-        pass  # fall back
-    print("⚠️  LLM filtering failed – keeping all files.")
+        else:
+            raise ValueError("Response JSON is not a list of strings")
+    except Exception as exc:
+        print("❌  LLM filtering failed – falling back to full list.")
+        print("   Exception:")
+        traceback.print_exception(type(exc), exc, exc.__traceback__)
+        if raw_content is not None:
+            print("   Raw LLM content →\n" + raw_content)
+    print("⚠️  Proceeding with unfiltered file list.")
     return files
 
 if __name__ == "__main__":

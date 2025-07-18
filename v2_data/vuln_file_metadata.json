@@ -1,0 +1,217 @@
+{
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.DS_Store": {
+    "kind": "file",
+    "side": "unknown",
+    "language": "",
+    "loc": 3,
+    "imports": [],
+    "description": "The provided file appears to be a binary data file, likely containing structured data in a proprietary format, possibly related to a specific application or system. It includes sections that may handle sensitive information, but without further context or a clear specification of its contents, it is difficult to ascertain specific security-critical behaviors. However, the presence of potentially sensitive data suggests that proper access controls and data handling practices should be enforced to mitigate risks.",
+    "sha1": "093e45370b37eaec77fa5ab03783f41c627f6053",
+    "token_estimate": 2022
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/CODEOWNERS": {
+    "kind": "file",
+    "side": "unknown",
+    "language": "",
+    "loc": 2,
+    "imports": [],
+    "description": "The file specifies a list of default reviewers for code changes, likely within a version control system or code review platform. There are no explicit security-critical behaviors mentioned in the content provided, but the inclusion of specific users as default reviewers could imply a reliance on their approval for code integrity and security.",
+    "sha1": "d065474cdab436184e093712d930916ea0b26105",
+    "token_estimate": 20
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/codesee-arch-diagram.yml": {
+    "kind": "file",
+    "side": "unknown",
+    "language": "yaml",
+    "loc": 24,
+    "imports": [
+      "Codesee-io/codesee-action"
+    ],
+    "description": "This file defines a GitHub Actions workflow that triggers on pushes to the master branch and certain pull request events to analyze the repository using CodeSee. It includes a security-critical behavior by utilizing a secret token for authentication, which must be managed carefully to prevent unauthorized access.",
+    "sha1": "f09599bb460fae7724d066f993ebd3f966aafb58",
+    "token_estimate": 138
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/github-repo-stats.yml": {
+    "kind": "file",
+    "side": "unknown",
+    "language": "yaml",
+    "loc": 21,
+    "imports": [],
+    "description": "This file defines a GitHub Actions workflow that runs a job to collect GitHub repository statistics daily and allows for manual execution. It uses a GitHub token stored in secrets for authentication, which is critical for maintaining the security of access to the GitHub API.",
+    "sha1": "dee6e1f6ef22e1bb2eedff8c047607f63ae4e7ea",
+    "token_estimate": 132
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.env": {
+    "kind": "file",
+    "side": "backend",
+    "language": "",
+    "loc": 8,
+    "imports": [],
+    "description": "The file contains configuration settings for a software application, including a JWT secret key and environment variables for production. There are no explicit security-critical behaviors in the provided code, but the presence of a JWT secret suggests that proper handling and protection of this key is essential for maintaining security in authentication processes.",
+    "sha1": "4bff93ddd2e39e23703572502dd0d024bba64359",
+    "token_estimate": 63
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.eslintrc.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 16,
+    "imports": [],
+    "description": "The file is an ESLint configuration that sets up the environment for both browser and Node.js, enabling ES2020 features. It extends the recommended ESLint rules and allows the use of console statements, which could potentially expose sensitive information if not managed properly.",
+    "sha1": "c204266a921b2674bec2ca1d037ef89bb94bda65",
+    "token_estimate": 58
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.gitignore": {
+    "kind": "file",
+    "side": "backend",
+    "language": "",
+    "loc": 8,
+    "imports": [],
+    "description": "The file appears to be a `.gitignore` configuration, specifying which files and directories should be excluded from version control in a Git repository. It includes common development artifacts such as `node_modules`, IDE configurations, and local environment files, which may contain sensitive information like API keys or database credentials, highlighting a security-critical behavior by preventing these files from being tracked in the repository.",
+    "sha1": "b7f2ebe6facbc709a0e920c3f4f12fd775b36cd4",
+    "token_estimate": 16
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.prettierignore": {
+    "kind": "file",
+    "side": "backend",
+    "language": "",
+    "loc": 4,
+    "imports": [],
+    "description": "The provided code snippet is a comment indicating directories to be ignored by version control or build tools, specifically 'build', 'coverage', and 'node_modules'. There are no security-critical behaviors present in this snippet as it does not contain executable code or imports.",
+    "sha1": "b4e35602fd2b7ab8ed5356131a111b8ea493726c",
+    "token_estimate": 12
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.prettierrc": {
+    "kind": "file",
+    "side": "backend",
+    "language": "",
+    "loc": 8,
+    "imports": [],
+    "description": "The provided code is a configuration file, likely for a code formatter such as Prettier, specifying formatting rules like print width, trailing commas, tab width, and quote style. There are no security-critical behaviors present in this file as it does not contain executable code or imports any modules.",
+    "sha1": "e34ade7bd247d727e0ffc255dbc573f5449fb89d",
+    "token_estimate": 27
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/deps.json": {
+    "kind": "file",
+    "side": "backend",
+    "language": "json",
+    "loc": 225,
+    "imports": [],
+    "description": "The provided file outlines the structure of a Node.js application, detailing various controllers, routes, and handlers used for managing client interactions, invoices, payments, quotes, and administrative tasks. It includes several routes for API endpoints and controllers that handle business logic, including functions for creating, reading, updating, and deleting resources. Security-critical behaviors may arise from the presence of admin authentication and the handling of sensitive data such as invoices and payments, necessitating careful implementation of access controls and data validation to prevent unauthorized access and data breaches.",
+    "sha1": "52075675f7912012603705ad11ba00972a321daf",
+    "token_estimate": 2817
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/jsconfig.json": {
+    "kind": "file",
+    "side": "backend",
+    "language": "json",
+    "loc": 10,
+    "imports": [],
+    "description": "The provided file is a TypeScript configuration file (tsconfig.json) that specifies compiler options, including the base URL for module resolution and path mappings. There are no apparent security-critical behaviors in this configuration as it primarily deals with project structure and module resolution.",
+    "sha1": "3f423286c8ea95c2d33194afa27e11885003eb17",
+    "token_estimate": 32
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/package.json": {
+    "kind": "file",
+    "side": "backend",
+    "language": "json",
+    "loc": 64,
+    "imports": [],
+    "description": "The file is a package configuration for the \"idurar-erp-crm\" application, specifying its version, dependencies, and scripts for various tasks such as starting the server, setting up the environment, and upgrading the application. It includes security-critical dependencies like \"bcryptjs\" for password hashing and \"jsonwebtoken\" for handling authentication tokens, which are essential for protecting user data and managing sessions securely. Additionally, the use of \"express-rate-limit\" suggests an effort to mitigate brute-force attacks.",
+    "sha1": "594749d8b48d53631710fd2843ecd06eb01f0732",
+    "token_estimate": 404
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/app.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 53,
+    "imports": [],
+    "description": "The file sets up an Express.js application that includes middleware for CORS, cookie parsing, JSON and URL-encoded body parsing, compression, and file uploads. It defines various API routes, including authentication and public access, while implementing security-critical behavior through the use of an authentication token validation middleware (`adminAuth.isValidAuthToken`) for certain routes. Additionally, it includes error handling for 404 and production errors to enhance application stability and security.",
+    "sha1": "1d8aa20cdf8f5d6e194f92ea3d379a6c3033cc8e",
+    "token_estimate": 373
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/helpers.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 61,
+    "imports": [],
+    "description": "The file provides utility functions for a templating system, including file reading for SVG icons and JPG images, date formatting with moment.js, and basic currency calculations using the currency.js library. A security-critical behavior is the use of `fs.readFileSync` to read files based on user input, which could lead to directory traversal vulnerabilities if not properly sanitized.",
+    "sha1": "f302ab241312d5fd9bab3702daa43198ea45da9d",
+    "token_estimate": 425
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/server.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 40,
+    "imports": [],
+    "description": "The file sets up a Node.js application that connects to a MongoDB database using Mongoose and loads model files from a specified directory. It checks for a minimum Node.js version of 20 and loads environment variables from `.env` files, including sensitive information like the OpenAI API key. Security-critical behaviors include the handling of database connection errors and the reliance on environment variables for sensitive configurations, which must be managed carefully to prevent exposure.",
+    "sha1": "6ae28f3701ca8a7196f88ab45f5fa85c476e0116",
+    "token_estimate": 297
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/index.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 15,
+    "imports": [
+      "mongoose",
+      "@/controllers/middlewaresControllers/createCRUDController",
+      "./summary"
+    ],
+    "description": "This file defines a model controller for a 'Client' entity using Mongoose, which includes CRUD operations and a summary method that utilizes a separate summary module. The security-critical behavior lies in the handling of requests and responses, which could be vulnerable to injection attacks if not properly sanitized.",
+    "sha1": "bb368fd74bf9d8a53e48de204d9424e2e5a995ca",
+    "token_estimate": 105
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/summary.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 98,
+    "imports": [],
+    "description": "The provided file defines an asynchronous function `summary` that aggregates client data based on a specified time period (week, month, or year) and returns statistics on total, new, and active clients. It includes security-critical behavior by validating the `type` query parameter to prevent injection attacks and ensuring that only valid types are processed, returning a 400 error for invalid inputs. Additionally, it filters clients based on their `removed` and `enabled` status, which is crucial for maintaining data integrity and security.",
+    "sha1": "023716f5bd8dc62cd54c569640ea70e1b3555ff4",
+    "token_estimate": 636
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/index.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 39,
+    "imports": [],
+    "description": "The file dynamically imports controller modules from a specified directory and creates a mapping of these controllers, including default CRUD controllers for any models that lack custom implementations. It employs error handling to catch issues during the import process, which could potentially expose sensitive information if not managed properly. Additionally, the use of dynamic imports may introduce security risks if the imported files are not properly validated or sanitized.",
+    "sha1": "4c00a82595758b5bc89db6973b17a7880a70b7d6",
+    "token_estimate": 277
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/create.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 75,
+    "imports": [],
+    "description": "The provided file defines a function to create an invoice in a MongoDB database using Mongoose, validating the request body against a predefined schema and calculating totals based on the items, tax rate, and discount. It includes security-critical behavior by relying on the `req.admin._id` for identifying the creator of the invoice, which necessitates proper authentication and authorization to prevent unauthorized access. Additionally, it updates the last invoice number in the system, which could be a point of concern if not properly managed.",
+    "sha1": "0b98985592478f344a8b66e0eb06d327c48cbd90",
+    "token_estimate": 471
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/index.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 21,
+    "imports": [
+      "@/controllers/middlewaresControllers/createCRUDController",
+      "./sendMail",
+      "./create",
+      "./summary",
+      "./update",
+      "./remove",
+      "./paginatedList",
+      "./read"
+    ],
+    "description": "This file defines a CRUD controller for managing 'Invoice' entities by importing various methods for handling mail, creation, updating, deletion, summarization, pagination, and reading of invoices. The security-critical behavior includes the potential exposure of sensitive invoice data through the CRUD operations, which must be properly authenticated and authorized to prevent unauthorized access.",
+    "sha1": "0177553eeeb427bc1ed24a72107a597eb1acee71",
+    "token_estimate": 156
+  }
+}
