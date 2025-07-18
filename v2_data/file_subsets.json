@@ -1,0 +1,44 @@
+[
+  {
+    "subset_id": "subset-001",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.env",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/app.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/server.js"
+    ],
+    "reason": "These files are responsible for setting up the server environment and initializing the application. They handle sensitive information such as JWT secrets and database connection details, making them critical for security."
+  },
+  {
+    "subset_id": "subset-002",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/index.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/summary.js"
+    ],
+    "reason": "These files handle the CRUD operations and summary statistics for the 'Client' entity. They are critical for data integrity and security as they manage client data and prevent injection attacks."
+  },
+  {
+    "subset_id": "subset-003",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/create.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/index.js"
+    ],
+    "reason": "These files manage the 'Invoice' entity, including creation, updating, deletion, and reading of invoices. They handle sensitive invoice data and require proper authentication and authorization."
+  },
+  {
+    "subset_id": "subset-004",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/CODEOWNERS",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/codesee-arch-diagram.yml",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/.github/workflows/github-repo-stats.yml"
+    ],
+    "reason": "These files manage GitHub workflows and code ownership. They handle sensitive tokens for authentication and specify default reviewers for code changes, making them important for code integrity and security."
+  },
+  {
+    "subset_id": "subset-005",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.gitignore",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.prettierignore"
+    ],
+    "reason": "These files specify which files and directories should be ignored by version control and code formatting tools. They prevent sensitive information like API keys or database credentials from being exposed."
+  }
+]

@@ -12,7 +12,8 @@ data_dir_name = f"{version}_data" if version else "data"
 DATA_DIR = Path(data_dir_name)
 SUBSET_FILE = DATA_DIR / "file_subsets.json"
 SUGGESTIONS_FILE = DATA_DIR / "subset_pipeline_suggestions.json"
-PIPELINES_FILE = DATA_DIR / "pipelines.json"
+CONFIG_DIR = Path("config")
+PIPELINES_FILE = CONFIG_DIR / "pipelines.json"
 OUTPUT_DIR = DATA_DIR / "pipeline_outputs"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
