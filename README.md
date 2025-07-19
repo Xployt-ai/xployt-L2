@@ -6,7 +6,7 @@ These utilities prepare smaller, model-friendly chunks of a MERN-stack codebase 
 ## Directory layout
 
 ```
-/data
+/output/repo_id
   file_tree.json              # raw file/folder structure of the target repo
   vuln_files_selection.json   # OpenAI-picked folders + standalone files
   vuln_file_metadata.json     # per-file metadata & summaries (backend + frontend)
