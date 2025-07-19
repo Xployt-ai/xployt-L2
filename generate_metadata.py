@@ -4,6 +4,7 @@ import hashlib
 import re
 from pathlib import Path
 from typing import Dict, Any, Tuple
+from utils.path_utils import data_dir as _data_dir
 
 # Third-party
 from dotenv import load_dotenv
@@ -14,9 +15,7 @@ load_dotenv()
 # --------------------------
 # Paths & directories
 # --------------------------
-version = os.getenv("VERSION")
-data_dir_name = f"{version}_data" if version else "data"
-DATA_DIR = Path(data_dir_name)
+DATA_DIR = _data_dir()
 DATA_DIR.mkdir(exist_ok=True)
 
 # --------------------------

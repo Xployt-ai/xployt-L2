@@ -1,0 +1,122 @@
+{
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.env": {
+    "kind": "file",
+    "side": "backend",
+    "language": "",
+    "loc": 8,
+    "imports": [],
+    "description": "The file contains configuration settings for a software application, including a JWT secret key and environment variables for production. The presence of a private JWT secret key indicates a potential security risk if not properly managed, as it is critical for authentication and authorization processes.",
+    "sha1": "4bff93ddd2e39e23703572502dd0d024bba64359",
+    "token_estimate": 63
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/app.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 53,
+    "imports": [],
+    "description": "The file sets up an Express.js application that includes middleware for handling CORS, cookie parsing, JSON and URL-encoded request bodies, and response compression. It defines several API routes, including authentication and file download endpoints, while implementing security measures such as token validation for certain routes. The application also includes error handling for 404 responses and production errors, which is critical for maintaining security and user experience.",
+    "sha1": "1d8aa20cdf8f5d6e194f92ea3d379a6c3033cc8e",
+    "token_estimate": 373
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/server.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 40,
+    "imports": [],
+    "description": "The file sets up a Node.js application that connects to a MongoDB database using Mongoose, ensuring the Node.js version is at least 20. It loads environment variables from `.env` files, including a critical API key for OpenAI, and handles connection errors by logging them. The application also dynamically imports model files from a specified directory and starts an Express server on a defined port, which could expose sensitive data if not properly secured.",
+    "sha1": "6ae28f3701ca8a7196f88ab45f5fa85c476e0116",
+    "token_estimate": 297
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/index.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 15,
+    "imports": [
+      "mongoose",
+      "@/controllers/middlewaresControllers/createCRUDController",
+      "./summary"
+    ],
+    "description": "This file defines a model controller for a 'Client' entity using Mongoose, which includes CRUD operations and a summary method that retrieves data. The use of Mongoose for database interactions could introduce security risks such as NoSQL injection if input validation is not properly handled.",
+    "sha1": "bb368fd74bf9d8a53e48de204d9424e2e5a995ca",
+    "token_estimate": 105
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/create.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 75,
+    "imports": [],
+    "description": "The provided file defines a function to create an invoice in a MongoDB database using Mongoose, validating the request body against a predefined schema and calculating totals for the invoice items, including tax and discounts. It includes security-critical behavior by directly using data from the request (e.g., `req.admin._id`) to set the `createdBy` field, which could be exploited if proper authentication and authorization checks are not enforced. Additionally, it updates the invoice document with a generated PDF filename, which may expose sensitive information if not handled securely.",
+    "sha1": "0b98985592478f344a8b66e0eb06d327c48cbd90",
+    "token_estimate": 471
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/index.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 21,
+    "imports": [
+      "@/controllers/middlewaresControllers/createCRUDController",
+      "./sendMail",
+      "./create",
+      "./summary",
+      "./update",
+      "./remove",
+      "./paginatedList",
+      "./read"
+    ],
+    "description": "This file defines a CRUD controller for managing 'Invoice' entities by importing various methods for handling operations such as sending mail, creating, updating, deleting, and reading invoices. The security-critical behavior includes the potential exposure of sensitive invoice data through these CRUD operations, which must be properly authenticated and authorized to prevent unauthorized access.",
+    "sha1": "0177553eeeb427bc1ed24a72107a597eb1acee71",
+    "token_estimate": 156
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/remove.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 38,
+    "imports": [],
+    "description": "The provided file defines an asynchronous function `remove` that marks an invoice and its associated payments as removed in a MongoDB database using Mongoose. It first attempts to find and update the invoice by its ID, and if successful, it subsequently updates all related payments to also be marked as removed. The function includes security-critical behavior by directly modifying database records based on user input (the invoice ID from `req.params.id`), which necessitates proper validation and authorization checks to prevent unauthorized access or data manipulation.",
+    "sha1": "19177aa0645f98a7a01909534b6cead45e9e8739",
+    "token_estimate": 199
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/update.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 84,
+    "imports": [],
+    "description": "The provided file defines an asynchronous function `update` that updates an invoice document in a MongoDB database using Mongoose. It validates the incoming request body against a predefined schema, calculates totals for the invoice items, and determines the payment status based on the credit and discount values. Security-critical behaviors include validating user input to prevent potential injection attacks and ensuring that only non-removed invoices are updated, which helps mitigate unauthorized access to sensitive data.",
+    "sha1": "92dd9f6e2b8648cd4abe3e7fe9fc9e40bd12c997",
+    "token_estimate": 529
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/create.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 87,
+    "imports": [],
+    "description": "The provided file defines an asynchronous function `create` that handles the creation of a new payment document in a MongoDB database using Mongoose. It includes validation to ensure that the payment amount is greater than zero and does not exceed the maximum allowable amount based on the associated invoice's total, discount, and credit. Security-critical behavior includes the reliance on `req.admin._id` for identifying the creator of the payment, which necessitates proper authentication and authorization to prevent unauthorized access or manipulation of payment records.",
+    "sha1": "651cfff3e4949f5f3a2420387a7c99058d0a6dc5",
+    "token_estimate": 539
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/index.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 17,
+    "imports": [
+      "@/controllers/middlewaresControllers/createCRUDController",
+      "./create",
+      "./summary",
+      "./update",
+      "./remove",
+      "./sendMail"
+    ],
+    "description": "This file defines a CRUD controller for managing 'Payment' entities by importing various methods for creating, updating, deleting, and summarizing payments, as well as sending mail notifications. The security-critical behavior includes the potential exposure of sensitive payment data through the CRUD operations and the handling of email notifications, which could be exploited if not properly secured.",
+    "sha1": "5a02011357bb3d09146a176e8e8d027de49bb371",
+    "token_estimate": 123
+  }
+}

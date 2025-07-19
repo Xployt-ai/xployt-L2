@@ -5,12 +5,11 @@ from typing import List
 
 from dotenv import load_dotenv
 from openai import OpenAI
+from utils.path_utils import data_dir as _data_dir
 
 load_dotenv()
 
-version = os.getenv("VERSION")
-data_dir_name = f"{version}_data" if version else "data"
-DATA_DIR = Path(data_dir_name)
+DATA_DIR = _data_dir()
 SUBSETS_FILE = DATA_DIR / "file_subsets.json"
 METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
 OUTPUT_FILE = DATA_DIR / "subset_pipeline_suggestions.json"

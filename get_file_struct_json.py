@@ -2,6 +2,7 @@ import os
 import json
 from pathlib import Path
 from dotenv import load_dotenv
+from utils.path_utils import data_dir as _data_dir
 
 load_dotenv()
 
@@ -40,10 +41,8 @@ if __name__ == "__main__":
     tree = build_file_tree(base_path, depth=6)
     
     # Ensure data directory exists
-    version = os.getenv("VERSION")
-    data_dir_name = f"{version}_data" if version else "data"
-    data_dir = Path(data_dir_name)
-    data_dir.mkdir(exist_ok=True)
+    repo_id = os.getenv("REPO_ID")
+    data_dir = _data_dir()
 
     output_path = data_dir / "file_tree.json"
     with output_path.open("w", encoding="utf-8") as f:

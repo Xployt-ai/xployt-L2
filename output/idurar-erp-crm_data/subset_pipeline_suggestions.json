@@ -22,11 +22,5 @@
     "suggested_pipelines": [
       "pipeline_injection"
     ]
-  },
-  {
-    "subset_id": "subset-005",
-    "suggested_pipelines": [
-      "pipeline_injection"
-    ]
   }
 ]

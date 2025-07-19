@@ -55,6 +55,6 @@
       "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/sendMail.js",
       "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/quoteController/paginatedList.js"
     ],
-    "reason": "These files are related to the 'Quote' entity's CRUD operations, quote-to-invoice conversion, and email sending. They are critical for data integrity and security as they handle sensitive quote data, require proper validation and authorization, and manage email functionalities."
+    "reason": "These files are related to the 'Quote' entity's CRUD operations, quote-to-invoice conrepo_id, and email sending. They are critical for data integrity and security as they handle sensitive quote data, require proper validation and authorization, and manage email functionalities."
   }
 ]

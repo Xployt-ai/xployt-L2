@@ -1,0 +1,36 @@
+[
+  {
+    "subset_id": "subset-001",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/.env",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/server.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/app.js"
+    ],
+    "reason": "These files are responsible for setting up the server environment, including loading environment variables, setting up the Express.js application, and connecting to the MongoDB database. They are critical for the overall security of the application as they handle sensitive data like JWT secret keys and API keys."
+  },
+  {
+    "subset_id": "subset-002",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/clientController/index.js"
+    ],
+    "reason": "This file defines a model controller for a 'Client' entity, which includes CRUD operations and a summary method. It is critical for security as it interacts directly with the database and could introduce security risks such as NoSQL injection if input validation is not properly handled."
+  },
+  {
+    "subset_id": "subset-003",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/create.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/index.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/remove.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/update.js"
+    ],
+    "reason": "These files handle the creation, updating, deletion, and reading of 'Invoice' entities. They are critical for security as they interact directly with the database and handle sensitive invoice data. They must be properly authenticated and authorized to prevent unauthorized access."
+  },
+  {
+    "subset_id": "subset-004",
+    "file_paths": [
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/create.js",
+      "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/paymentController/index.js"
+    ],
+    "reason": "These files handle the creation, updating, deletion, and summarizing of 'Payment' entities. They are critical for security as they interact directly with the database and handle sensitive payment data. They must be properly authenticated and authorized to prevent unauthorized access or manipulation of payment records."
+  }
+]

@@ -2,6 +2,7 @@ import os
 import sys, json
 from dotenv import load_dotenv  
 from pathlib import Path
+from utils.path_utils import data_dir as _data_dir
 
 load_dotenv()
 
@@ -40,10 +41,7 @@ if __name__ == "__main__":
 
     tree = print_tree(base_path, depth)
     
-    version = os.getenv("VERSION")
-    data_dir_name = f"{version}_data" if version else "data"
-    data_dir = Path(data_dir_name)
-    data_dir.mkdir(exist_ok=True)
+    data_dir = _data_dir()
 
     output_path = data_dir / "file_tree_printed.json"
     with output_path.open("w", encoding="utf-8") as f:

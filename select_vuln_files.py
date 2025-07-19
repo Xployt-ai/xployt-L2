@@ -4,6 +4,7 @@ from pathlib import Path
 # Third-party
 from dotenv import load_dotenv
 from openai import OpenAI
+from utils.path_utils import data_dir as _data_dir
 import re
 import traceback
 
@@ -15,9 +16,7 @@ EXCLUDE_DIRS = {
 }
 
 # Central data directory
-version = os.getenv("VERSION")
-data_dir_name = f"{version}_data" if version else "data"
-DATA_DIR = Path(data_dir_name)
+DATA_DIR = _data_dir()
 DATA_DIR.mkdir(exist_ok=True)
 
 # Maximum number of file paths to include in the LLM prompt.  

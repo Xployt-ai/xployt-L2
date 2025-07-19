@@ -30,6 +30,7 @@ main.py                       # FastAPI server for pipeline automation
 ```
 OPENAI_API_KEY=<your key>
 CODEBASE_PATH=<absolute path to the repo you want to analyse>
+REPO_ID=<unique identifier for the repo>
 # optional – limit number of files processed by generate_metadata.py
 METADATA_MAX_FILES=25
 ```
@@ -93,7 +94,7 @@ poetry install
 
    ```bash
    poetry run python pipeline_executor.py
-   # -> writes results under data/pipeline_outputs/
+   # -> writes results under output/REPO_ID_data/pipeline_outputs/
    ```
 
 ---
@@ -107,7 +108,7 @@ poetry install
 | `generate_metadata.py` | Reads the selection, computes language/LOC/imports per file, calls GPT-4 for a 2-3 sentence summary (cached via SHA-1), and writes a consolidated metadata file. | `data/vuln_file_metadata.json` |
 | `group_subsets.py` | Uses GPT-4 to cluster files into logical subsets based on functional connections (data flow, MVC, shared state). | `data/file_subsets.json` |
 | `pipeline_suggester.py` | For each subset, asks GPT-4 which vulnerability analysis pipelines should run and stores suggestions. | `data/subset_pipeline_suggestions.json` |
-| `pipeline_executor.py` | Executes the suggested pipelines per subset and persists LLM outputs for each pipeline stage. | `data/pipeline_outputs/` |
+| `pipeline_executor.py` | Executes the suggested pipelines per subset and persists LLM outputs for each pipeline stage. | `output/REPO_ID_data/pipeline_outputs/` |
 
 ---
 ## Updating / re-running
@@ -143,13 +144,13 @@ Request body (JSON):
 
 ```json
 {
-  "id": "v1.2.3",          // Arbitrary version or run identifier – stored as VERSION in .env
-  "path": "/abs/path/to/repo"  // Path to the codebase to analyse – stored as CODEBASE_PATH in .env
+  "id": "a_unique_id",          // Arbitrary identifier – persisted as REPO_ID in .env
+  "path": "/abs/path/to/repo"  // Absolute path to the codebase – persisted as CODEBASE_PATH in .env
 }
 ```
 
 Behavior:
-1. Updates/creates `.env` with `VERSION` and `CODEBASE_PATH`.
+1. Updates/creates `.env` with `REPO_ID` and `CODEBASE_PATH`.
 2. Executes scripts in this order, aborting on first failure:
    - `get_file_struct_json.py`
    - `select_vuln_files.py`
@@ -157,15 +158,71 @@ Behavior:
    - `group_subsets.py`
    - `pipeline_suggester.py`
    - `pipeline_executor.py`
-3. Returns JSON containing the stdout of the last executed script.
+3. Returns JSON:
+   * If `pipeline_executor.py` produced an aggregated summary → `{ "success": true, "results": [...] }`
+   * Otherwise → `{ "success": true, "output": "<stdout of last script>" }`
 
-Successful response example:
+Successful `results` example:
 
 ```json
 {
   "success": true,
-  "output": "✅ Suggestions written to 2025-07-20_data/pipeline_outputs/..."
+  "results": [
+    {
+      "subset_id": "subset-001",
+      "pipeline_id": "pipeline_injection",
+      "outputs": [
+        "subset-001_pipeline_injection_vuln_report.json",
+        "subset-001_pipeline_injection_owasp_only.json",
+        "subset-001_pipeline_injection_remediation_suggestions.json"
+      ]
+    }
+  ]
 }
 ```
 
-If a script fails, the API returns HTTP 500 with details.
+Successful plain-output example:
+
+```json
+{
+  "success": true,
+  "output": "✅ Suggestions written to output/idurar-erp-crm_data/pipeline_outputs/..."
+}
+```
+
+If a script fails, the API returns HTTP 500 with a body like:
+
+```json
+{
+  "detail": {
+    "message": "Script 'generate_metadata.py' failed (exit code 1)",
+    "output": "Traceback …"
+  }
+}
+```
+
+### Starting the API server
+
+Ensure dependencies are installed:
+
+```bash
+poetry install
+```
+
+Then launch FastAPI with live-reload:
+
+```bash
+poetry run uvicorn main:app --reload
+```
+
+By default the docs are available at <http://127.0.0.1:8000/docs>.
+
+### Example request (cURL)
+
+```bash
+curl -X POST http://127.0.0.1:8000/run-pipeline \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "idurar-erp-crm",
+           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm"
+         }'

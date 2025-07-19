@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import subprocess
 from pathlib import Path
 import os
+import sys
 from typing import List
 from dotenv import load_dotenv, set_key
 import json
@@ -14,6 +15,9 @@ SCRIPTS: List[str] = [
     "get_file_struct_json.py",
     "select_vuln_files.py",
     "generate_metadata.py",
+    "group_subsets.py",
+    "pipeline_suggester.py",
+    "pipeline_executor.py",
 ]
 
 class PipelineRequest(BaseModel):
@@ -29,16 +33,16 @@ def _ensure_dotenv() -> Path:
     return env_path
 
 
-def _update_env_vars(version: str, codebase_path: str) -> None:
+def _update_env_vars(repo_id: str, codebase_path: str) -> None:
     """Persist env vars to .env and current process."""
     env_path = _ensure_dotenv()
 
     # Write to .env file
-    set_key(str(env_path), "VERSION", version)
+    set_key(str(env_path), "REPO_ID", repo_id)
     set_key(str(env_path), "CODEBASE_PATH", codebase_path)
 
     # Export to current process for child scripts
-    os.environ["VERSION"] = version
+    os.environ["REPO_ID"] = repo_id
     os.environ["CODEBASE_PATH"] = codebase_path
 
 
@@ -48,11 +52,18 @@ def _run_script(script: str) -> subprocess.CompletedProcess[str]:
     if not script_path.exists():
         raise FileNotFoundError(f"Script '{script}' not found.")
 
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env["PYTHONUTF8"] = "1"
+
     return subprocess.run(
-        ["python", str(script_path)],
+        [sys.executable, str(script_path)],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
+        env=env,
+        encoding="utf-8",
+        errors="replace",
     )
 
 
@@ -67,8 +78,12 @@ async def run_pipeline(req: PipelineRequest):
 
     last_output = ""
     for script in SCRIPTS:
+        print(f"\n▶ Running {script} …")
         proc = _run_script(script)
         last_output = proc.stdout
+        # Echo first 300 chars to server console for quick insight
+        preview = (last_output[:300] + "…") if len(last_output) > 300 else last_output
+        print(f"✓ Finished {script} (exit {proc.returncode})\n--- output preview ---\n{preview}\n----------------------")
         if proc.returncode != 0:
             raise HTTPException(
                 status_code=500,
@@ -79,7 +94,7 @@ async def run_pipeline(req: PipelineRequest):
             )
 
     # Try to return structured summary if pipeline_executor produced one
-    summary_path = Path(os.environ["VERSION"] + "_data") / "pipeline_outputs" / "run_summary.json"
+    summary_path = Path(os.environ["REPO_ID"] + "_data") / "pipeline_outputs" / "run_summary.json"
     if summary_path.exists():
         try:
             summary_json = json.loads(summary_path.read_text())

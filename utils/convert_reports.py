@@ -2,11 +2,11 @@
 import json
 import pathlib
 import os
+from utils.path_utils import data_dir as _data_dir
 import argparse
 
-version = os.getenv("VERSION")
-data_dir_name = f"{version}_data" if version else "data"
-DATA_DIR = pathlib.Path(data_dir_name)
+repo_id = os.getenv("REPO_ID")
+DATA_DIR = _data_dir()
 
 DEFAULT_SRC = pathlib.Path("v2_data/pipeline_outputs")
 

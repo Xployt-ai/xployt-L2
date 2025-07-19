@@ -4,12 +4,11 @@ from pathlib import Path
 from typing import Any, List, Dict
 from dotenv import load_dotenv
 from openai import OpenAI
+from utils.path_utils import data_dir as _data_dir
 
 load_dotenv()
 
-version = os.getenv("VERSION")
-data_dir_name = f"{version}_data" if version else "data"
-DATA_DIR = Path(data_dir_name)
+DATA_DIR = _data_dir()
 SUBSET_FILE = DATA_DIR / "file_subsets.json"
 SUGGESTIONS_FILE = DATA_DIR / "subset_pipeline_suggestions.json"
 CONFIG_DIR = Path("config")

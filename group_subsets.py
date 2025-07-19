@@ -7,8 +7,8 @@ import re
 
 load_dotenv()
 
-version = os.getenv("VERSION")
-data_dir_name = f"{version}_data" if version else "data"
+repo_id = os.getenv("REPO_ID")
+data_dir_name = f"output/{repo_id}_data" if repo_id else "data"
 DATA_DIR = Path(data_dir_name)
 METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
 OUTPUT_FILE = DATA_DIR / "file_subsets.json"
