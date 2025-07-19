@@ -5,6 +5,7 @@ from pathlib import Path
 import os
 from typing import List
 from dotenv import load_dotenv, set_key
+import json
 
 app = FastAPI(title="Xployt-L2 Pipeline Runner")
 
@@ -76,6 +77,16 @@ async def run_pipeline(req: PipelineRequest):
                     "output": last_output,
                 },
             )
+
+    # Try to return structured summary if pipeline_executor produced one
+    summary_path = Path(os.environ["VERSION"] + "_data") / "pipeline_outputs" / "run_summary.json"
+    if summary_path.exists():
+        try:
+            summary_json = json.loads(summary_path.read_text())
+            return {"success": True, "results": summary_json}
+        except Exception:
+            # Fallback to raw output if JSON invalid
+            pass
 
     return {"success": True, "output": last_output}
 
