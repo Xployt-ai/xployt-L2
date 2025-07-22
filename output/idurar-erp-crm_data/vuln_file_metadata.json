@@ -118,5 +118,15 @@
     "description": "This file defines a CRUD controller for managing 'Payment' entities by importing various methods for creating, updating, deleting, and summarizing payments, as well as sending mail notifications. The security-critical behavior includes the potential exposure of sensitive payment data through the CRUD operations and the handling of email notifications, which could be exploited if not properly secured.",
     "sha1": "5a02011357bb3d09146a176e8e8d027de49bb371",
     "token_estimate": 123
+  },
+  "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm/backend/src/controllers/appControllers/invoiceController/read.js": {
+    "kind": "file",
+    "side": "backend",
+    "language": "js",
+    "loc": 31,
+    "imports": [],
+    "description": "The provided file defines an asynchronous function `read` that retrieves an `Invoice` document from a MongoDB database using Mongoose, based on an ID passed in the request parameters. It checks if the document is marked as not removed and populates the `createdBy` field with the user's name; if the document is not found, it returns a 404 error, otherwise, it returns the document with a 200 status. The security-critical behavior includes the reliance on user input for the document ID, which could be susceptible to injection attacks if not properly validated.",
+    "sha1": "c7eff65ccfbb8d00843adf9c29b12759900b4505",
+    "token_estimate": 165
   }
 }
