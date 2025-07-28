@@ -7,10 +7,10 @@ __all__ = ["data_dir"]
 def data_dir() -> Path:
     """Return the base directory where all generated artifacts are stored.
 
-    Structure: output/<REPO_ID>_data  (or output/data if REPO_ID not set)
+    Structure: output/<repo_id>_data  (or output/data if repo_id is not set)
     Ensures both the parent `output/` and the repo_ided sub-directory exist.
     """
-    repo_id = _settings.REPO_ID
+    repo_id = _settings.repo_id
     root = Path("output")
     root.mkdir(exist_ok=True)
 

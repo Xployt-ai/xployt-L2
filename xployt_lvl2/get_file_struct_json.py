@@ -1,10 +1,8 @@
 import os
 import json
 from pathlib import Path
-from dotenv import load_dotenv
+from xployt_lvl2.config.settings import settings as _settings
 from utils.path_utils import data_dir as _data_dir
-
-load_dotenv()
 
 EXCLUDE_DIRS = {
     "node_modules", ".git", ".next", "dist", "build", "__pycache__",
