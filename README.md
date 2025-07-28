@@ -1,4 +1,4 @@
-# Xployt-L2 – Helper Scripts for Vulnerability Triage
+# Xployt-lvl2 – Helper Scripts for Vulnerability Triage
 
 These utilities prepare smaller, model-friendly chunks of a MERN-stack codebase for LLM-based vulnerability scanning.
 
@@ -212,7 +212,7 @@ poetry install
 Then launch FastAPI with live-reload:
 
 ```bash
-poetry run uvicorn main:app --reload
+poetry run uvicorn xployt_lvl2.main:app --reload
 ```
 
 By default the docs are available at <http://127.0.0.1:8000/docs>.
@@ -223,6 +223,6 @@ By default the docs are available at <http://127.0.0.1:8000/docs>.
 curl -X POST http://127.0.0.1:8000/run-pipeline \
      -H "Content-Type: application/json" \
      -d '{
-           "id": "idurar-erp-crm",
+           "id": "idurar-erp-crm-5",
            "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm"
          }'

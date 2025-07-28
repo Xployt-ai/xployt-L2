@@ -1,0 +1,6 @@
+# Default configuration values
+repo_id: null
+codebase_path: .
+output_root: output
+llm_model: gpt-4o
+temperature: 0.1

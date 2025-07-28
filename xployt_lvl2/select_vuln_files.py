@@ -134,6 +134,32 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
     print("⚠️  Proceeding with unfiltered file list.")
     return files
 
+def run(repo_id: str, codebase_path: str | Path) -> Path:
+    """Pipeline step: select potentially vulnerable files and write JSON.
+
+    Returns the path to the written JSON file.
+    """
+    # Ensure env vars are available for downstream helper fns that still read them
+    os.environ["REPO_ID"] = repo_id
+    os.environ["CODEBASE_PATH"] = str(codebase_path)
+
+    file_structure = load_file_structure()
+    print("📂 Flattening file tree…")
+    files_all = gather_all_files(file_structure, Path(codebase_path))
+
+    # 1️⃣ regex pre-filter
+    files_regex = regex_pre_filter(files_all)
+
+    # 2️⃣ optional LLM filter
+    files_final = filter_files_with_llm(files_regex)
+
+    output = {"files_to_analyze": files_final}
+
+    out_path = DATA_DIR / "vuln_files_selection.json"
+    out_path.write_text(json.dumps(output, indent=2))
+    print(f"💾 Written selection JSON with {len(files_final)} files → {out_path}")
+    return out_path
+
 if __name__ == "__main__":
     base_path_env = os.getenv("CODEBASE_PATH")
     if not base_path_env:

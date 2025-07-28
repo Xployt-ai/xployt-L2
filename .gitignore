@@ -1,3 +1,4 @@
 .env
 /Archive/*
 __pycache__
+output
