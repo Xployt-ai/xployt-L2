@@ -1,4 +1,5 @@
 from pathlib import Path
+from xployt_lvl2.config.settings import settings as _settings
 import os
 
 __all__ = ["data_dir"]
@@ -9,7 +10,7 @@ def data_dir() -> Path:
     Structure: output/<REPO_ID>_data  (or output/data if REPO_ID not set)
     Ensures both the parent `output/` and the repo_ided sub-directory exist.
     """
-    repo_id = os.getenv("REPO_ID")
+    repo_id = _settings.REPO_ID
     root = Path("output")
     root.mkdir(exist_ok=True)
 

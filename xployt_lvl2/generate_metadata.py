@@ -5,12 +5,8 @@ import re
 from pathlib import Path
 from typing import Dict, Any, Tuple
 from utils.path_utils import data_dir as _data_dir
-
-# Third-party
-from dotenv import load_dotenv
 from openai import OpenAI
-
-load_dotenv()
+from xployt_lvl2.config.settings import settings as _settings
 
 # --------------------------
 # Paths & directories
@@ -169,15 +165,9 @@ def load_existing_metadata() -> Dict[str, Dict[str, Any]]:
         return json.load(f)
 
 
-def main(base_dir: str = ".") -> None:
-    load_dotenv()
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-    # Resolve base directory: CLI arg takes precedence, otherwise env var CODEBASE_PATH, otherwise current dir.
-    if base_dir == ".":
-        env_base = os.getenv("CODEBASE_PATH")
-        if env_base:
-            base_dir = env_base
+def _generate_metadata(base_dir: str) -> None:
+    """Core implementation – assumes settings/client have been prepared."""
+    client = OpenAI(api_key=_settings.openai_api_key)
 
     # Load initial selection (folders + files) and expand folders to individual files
     raw_paths = load_selection()
@@ -250,11 +240,13 @@ def main(base_dir: str = ".") -> None:
     print(f"\n🎉 Metadata written to {OUTPUT_FILE} (total {len(existing)} entries)")
 
 
+# ---------- Public API ---------- #
+
+
+def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> Path:
+    """Pipeline step entry. Uses settings values by default."""
+    _generate_metadata(str(_settings.codebase_path))
+    return OUTPUT_FILE
+
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Generate/update per-file metadata summaries.")
-    parser.add_argument("--base", default=".", help="Project root (defaults to cwd)")
-    args = parser.parse_args()
-
-    main(args.base)
+    run()

@@ -58,15 +58,14 @@ def run(repo_id: str, codebase_path: str | Path, depth: int = 6) -> Path:
         raise RuntimeError("Unable to generate file tree; result is empty.")
 
     data_dir = _data_dir()
-    data_dir.mkdir(exist_ok=True)
     output_path = data_dir / "file_tree.json"
     output_path.write_text(json.dumps(tree, indent=2))
     return output_path
 
 if __name__ == "__main__":
     # CHANGE THIS TO YOUR ABSOLUTE PATH
-    base_path = os.getenv("CODEBASE_PATH")
-    repo_id = os.getenv("REPO_ID", "unknown_repo")
+    base_path = _settings.codebase_path
+    repo_id = _settings.repo_id
     try:
         out = run(repo_id, base_path, depth=6)
         print(f"✅ File structure saved to {out}")

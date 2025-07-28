@@ -31,16 +31,11 @@ from xployt_lvl2.config.settings import settings as _settings
 
 
 def _update_env_vars(repo_id: str, codebase_path: str) -> None:
-    """Update runtime settings and os.environ for child modules."""
+    """Update runtime settings"""
 
     # Update singleton settings (they are mutable via __dict__)
     _settings.repo_id = repo_id
     _settings.codebase_path = Path(codebase_path)
-
-    # Expose as plain env vars for any legacy code still reading them
-    os.environ["REPO_ID"] = repo_id
-    os.environ["CODEBASE_PATH"] = codebase_path
-
 
 # ---------- Dynamic import helper ---------- #
 
@@ -59,11 +54,8 @@ def _call_pipeline_module(mod_name: str, repo_id: str, codebase_path: str) -> st
         # Prefer explicit run(repo_id, codebase_path)
         if hasattr(module, "run"):
             module.run(repo_id, codebase_path)
-        elif hasattr(module, "main"):
-            # Some legacy scripts use CLI-style main()
-            module.main()
         else:
-            raise AttributeError(f"Module '{mod_name}' has no run() or main() entry point.")
+            raise AttributeError(f"Module '{mod_name}' has no run() entry point.")
 
     return buffer.getvalue()
 
@@ -94,7 +86,7 @@ async def run_pipeline(req: PipelineRequest):
             )
 
     # Try to return structured summary if pipeline_executor produced one
-    summary_path = Path(os.environ["REPO_ID"] + "_data") / "pipeline_outputs" / "run_summary.json"
+    summary_path = Path(_settings.repo_id + "_data") / "pipeline_outputs" / "run_summary.json"
     if summary_path.exists():
         try:
             summary_json = json.loads(summary_path.read_text())
@@ -104,6 +96,3 @@ async def run_pipeline(req: PipelineRequest):
             pass
 
     return {"success": True, "output": last_output}
-
-
-# Nothing to load; settings are pre-loaded from YAML + env vars

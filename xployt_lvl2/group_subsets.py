@@ -1,15 +1,12 @@
 import json
 from pathlib import Path
-import os
-from dotenv import load_dotenv
-from openai import OpenAI
+from typing import List
+from utils.path_utils import data_dir as _data_dir
+from xployt_lvl2.config.settings import settings as _settings
 import re
 
-load_dotenv()
-
-repo_id = os.getenv("REPO_ID")
-data_dir_name = f"output/{repo_id}_data" if repo_id else "data"
-DATA_DIR = Path(data_dir_name)
+repo_id = _settings.repo_id
+DATA_DIR = _data_dir()
 METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
 OUTPUT_FILE = DATA_DIR / "file_subsets.json"
 
@@ -68,8 +65,7 @@ def build_llm_prompt(meta: dict[str, dict]) -> str:
 
 def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> list[dict] | None:
     """Call OpenAI to propose subsets. Returns list on success, else None."""
-    load_dotenv()
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = _settings.openai_api_key
     if not api_key:
         print("⚠️  OPENAI_API_KEY not set - cannot use LLM grouping")
         return None
@@ -177,5 +173,19 @@ def main():
     print(f"✅ Wrote {len(subsets)} subsets to {OUTPUT_FILE}")
 
 
-if __name__ == "__main__":
+# ---------- Public API ---------- #
+
+def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> Path:
+    """Pipeline step: group files into subsets; returns output path."""
+    
+    if repo_id is not None:
+        _settings.repo_id = repo_id
+    if codebase_path is not None:
+        _settings.codebase_path = Path(codebase_path)
+
     main()
+    return OUTPUT_FILE
+
+
+if __name__ == "__main__":
+    run()

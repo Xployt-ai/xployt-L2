@@ -3,11 +3,9 @@ import os
 from pathlib import Path
 from typing import List
 
-from dotenv import load_dotenv
 from openai import OpenAI
 from utils.path_utils import data_dir as _data_dir
-
-load_dotenv()
+from xployt_lvl2.config.settings import settings as _settings
 
 DATA_DIR = _data_dir()
 SUBSETS_FILE = DATA_DIR / "file_subsets.json"
@@ -75,13 +73,10 @@ Here is the code subset description:
     return ["pipeline_injection"]
 
 
-# ---------------------------
-# Main
-# ---------------------------
+# ---------- core implementation ---------- #
 
-def main():
-    load_dotenv()
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def _suggest_pipelines() -> None:
+    client = OpenAI(api_key=_settings.openai_api_key)
 
     subsets = load_json(SUBSETS_FILE)
     pipelines = load_json(PIPELINES_DEF)["pipelines"]
@@ -100,5 +95,13 @@ def main():
     print(f"\n🎉 Suggestions written to {OUTPUT_FILE}")
 
 
+# ---------- Public API ---------- #
+
+def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> Path:
+    """Pipeline step: suggest pipelines for each subset and write JSON."""
+    _suggest_pipelines()
+    return OUTPUT_FILE
+
+
 if __name__ == "__main__":
-    main()
+    run()

@@ -2,11 +2,9 @@ import json
 import os
 from pathlib import Path
 from typing import Any, List, Dict
-from dotenv import load_dotenv
 from openai import OpenAI
 from utils.path_utils import data_dir as _data_dir
-
-load_dotenv()
+from xployt_lvl2.config.settings import settings as _settings
 
 DATA_DIR = _data_dir()
 SUBSET_FILE = DATA_DIR / "file_subsets.json"
@@ -87,9 +85,8 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict, client: OpenAI) -> 
     }
 
 
-def main():
-    load_dotenv()
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def _execute_pipelines() -> None:
+    client = OpenAI(api_key=_settings.openai_api_key)
 
     subsets = {s["subset_id"]: s for s in load_json(SUBSET_FILE)}
     suggestions = load_json(SUGGESTIONS_FILE)
@@ -113,5 +110,20 @@ def main():
     print(f"\n📄 Aggregated summary written to {summary_path}")
 
 
+# ---------- Public API ---------- #
+
+
+def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> Path:
+    """Execute LLM pipelines on each subset; returns summary JSON path."""
+
+    if repo_id is not None:
+        _settings.repo_id = repo_id
+    if codebase_path is not None:
+        _settings.codebase_path = Path(codebase_path)
+
+    _execute_pipelines()
+    return OUTPUT_DIR / "run_summary.json"
+
+
 if __name__ == "__main__":
-    main()
+    run()
