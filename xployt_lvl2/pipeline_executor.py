@@ -9,7 +9,7 @@ from xployt_lvl2.config.settings import settings as _settings
 DATA_DIR = _data_dir()
 SUBSET_FILE = DATA_DIR / "file_subsets.json"
 SUGGESTIONS_FILE = DATA_DIR / "subset_pipeline_suggestions.json"
-CONFIG_DIR = Path("config")
+CONFIG_DIR = Path(__file__).resolve().parent / "config"
 PIPELINES_FILE = CONFIG_DIR / "pipelines.json"
 OUTPUT_DIR = DATA_DIR / "pipeline_outputs"
 OUTPUT_DIR.mkdir(exist_ok=True)

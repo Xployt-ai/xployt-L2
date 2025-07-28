@@ -12,7 +12,7 @@ SUBSETS_FILE = DATA_DIR / "file_subsets.json"
 METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
 OUTPUT_FILE = DATA_DIR / "subset_pipeline_suggestions.json"
 
-CONFIG_DIR = Path("config")
+CONFIG_DIR = Path(__file__).resolve().parent / "config"
 PIPELINES_DEF = CONFIG_DIR / "pipelines.json"
 
 # ---------------------------

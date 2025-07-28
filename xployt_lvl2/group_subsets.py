@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List
 from utils.path_utils import data_dir as _data_dir
 from xployt_lvl2.config.settings import settings as _settings
+from openai import OpenAI
 import re
 
 repo_id = _settings.repo_id
