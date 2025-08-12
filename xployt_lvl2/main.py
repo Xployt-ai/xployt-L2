@@ -7,6 +7,8 @@ import os
 import sys
 from typing import List
 import json
+import asyncio
+from sse_starlette.sse import EventSourceResponse  # type: ignore
 
 app = FastAPI(title="Xployt-lvl2 Pipeline Runner")
 
@@ -96,3 +98,48 @@ async def run_pipeline(req: PipelineRequest):
             pass
 
     return {"success": True, "output": last_output}
+
+
+# ---------- SSE generator ---------- #
+
+async def _pipeline_sse_generator(req: "PipelineRequest"):
+    """Async generator yielding progress events as SSE-compatible lines."""
+
+    import json as _json
+
+    def _yield(data: dict):
+        """Return properly formatted SSE message string (EventSourceResponse will prepend)."""
+        # EventSourceResponse adds the required  "data: " prefix and \n\n delimiter.
+        return _json.dumps(data)
+
+    try:
+        _update_env_vars(req.id, req.path)
+    except Exception as exc:
+        yield _yield({"event": "error", "message": f"Failed to set env vars: {exc}"})
+        return
+
+    for mod in PIPELINE_MODULES:
+        yield _yield({"event": "start", "step": mod})
+        try:
+            output = await asyncio.to_thread(_call_pipeline_module, mod, req.id, req.path)
+            preview = (output[:300] + "…") if len(output) > 300 else output
+            yield _yield({"event": "finish", "step": mod, "preview": preview})
+        except Exception as exc:
+            yield _yield({"event": "error", "step": mod, "message": str(exc)})
+            return
+
+    # On success, attempt to return summary path
+    summary_path = Path(_settings.data_dir()) / "pipeline_outputs" / "run_summary.json"
+    if summary_path.exists():
+        yield _yield({"event": "complete", "summary_path": str(summary_path)})
+    else:
+        yield _yield({"event": "complete", "message": "Pipeline finished"})
+
+
+# ---------- SSE Endpoint ---------- #
+
+@app.post("/run-pipeline-sse")
+async def run_pipeline_stream(req: "PipelineRequest"):
+    """Endpoint that streams pipeline progress via Server-Sent Events (SSE)."""
+
+    return EventSourceResponse(_pipeline_sse_generator(req))
