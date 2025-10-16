@@ -18,7 +18,8 @@ app_state = AppState()
 
 @dataclass
 class ProgressState:
-    metadata_files: int | None = None
+    shortlisted_vul_files_count: int | None = None
+    metadata_files_count: int | None = None
     subset_count: int | None = None
 
 # Cache keyed by repo_id (so concurrent repos can be tracked independently)
@@ -44,12 +45,12 @@ def reset_progress_state(repo_id: Optional[str] = None) -> None:
 
 def set_metadata_files_count(repo_id: Optional[str], n: int) -> int:
     ps = get_progress_state(repo_id)
-    ps.metadata_files = n
+    ps.metadata_files_count = n
     return n
 
 def get_metadata_files_count(repo_id: Optional[str]) -> int | None:
     ps = get_progress_state(repo_id)
-    return ps.metadata_files
+    return ps.metadata_files_count
 
 def set_subset_count(repo_id: Optional[str], n: int) -> int:
     ps = get_progress_state(repo_id)
@@ -59,6 +60,15 @@ def set_subset_count(repo_id: Optional[str], n: int) -> int:
 def get_subset_count(repo_id: Optional[str]) -> int | None:
     ps = get_progress_state(repo_id)
     return ps.subset_count
+
+def set_shortlisted_vul_files_count(repo_id: Optional[str], n: int) -> int:
+    ps = get_progress_state(repo_id)
+    ps.shortlisted_vul_files_count = n
+    return n
+
+def get_shortlisted_vul_files_count(repo_id: Optional[str]) -> int | None:
+    ps = get_progress_state(repo_id)
+    return ps.shortlisted_vul_files_count
 
 __all__ = [
     "app_state",
@@ -70,4 +80,6 @@ __all__ = [
     "get_metadata_files_count",
     "set_subset_count",
     "get_subset_count",
+    "set_shortlisted_vul_files_count",
+    "get_shortlisted_vul_files_count",
 ]
