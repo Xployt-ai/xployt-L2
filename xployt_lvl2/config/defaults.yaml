@@ -1,6 +1,8 @@
 # Default configuration values
-repo_id: null
-codebase_path: .
+repo_id: idurar-erp-crm-5
+codebase_path: E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm
 output_root: output
 llm_model: gpt-4o
 temperature: 0.1
+metadata_max_files: 5
+select_vul_files_limit: 5
