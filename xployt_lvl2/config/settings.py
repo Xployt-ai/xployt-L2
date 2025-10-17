@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     
     # LLM settings
     llm_model: str = "gpt-4o"
+    llm_model_subset_grouping: str = "gpt-4o"
     temperature: float = 0.1
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     

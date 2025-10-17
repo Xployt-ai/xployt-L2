@@ -2,7 +2,7 @@ import os
 import sys, json
 from dotenv import load_dotenv  
 from pathlib import Path
-from utils.path_utils import data_dir as _data_dir
+from utils.state_utils import data_dir as _data_dir
 
 load_dotenv()
 

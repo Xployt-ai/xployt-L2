@@ -2,7 +2,8 @@ import os
 import json
 from pathlib import Path
 from xployt_lvl2.config.settings import settings as _settings
-from utils.path_utils import data_dir as _data_dir
+from xployt_lvl2.config.state import app_state
+from utils.state_utils import data_dir as _data_dir
 
 EXCLUDE_DIRS = {
     "node_modules", ".git", ".next", "dist", "build", "__pycache__",
@@ -62,10 +63,10 @@ def run(repo_id: str, codebase_path: str | Path, depth: int = 6) -> Path:
 
 if __name__ == "__main__":
     # CHANGE THIS TO YOUR ABSOLUTE PATH
-    base_path = _settings.codebase_path
-    repo_id = _settings.repo_id
+    base_path = app_state.codebase_path
+    repo_id = app_state.repo_id
     try:
         out = run(repo_id, base_path, depth=6)
-        print(f"✅ File structure saved to {out}")
+        print(f"File structure saved to {out}")
     except Exception as exc:
-        print(f"❌ Failed to generate file structure: {exc}")
+        print(f"Failed to generate file structure: {exc}")

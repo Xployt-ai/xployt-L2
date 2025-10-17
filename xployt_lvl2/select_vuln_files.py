@@ -4,7 +4,9 @@ from pathlib import Path
 # Third-party
 from dotenv import load_dotenv
 from openai import OpenAI
-from utils.path_utils import data_dir as _data_dir
+from utils.state_utils import data_dir as _data_dir
+from xployt_lvl2.config.state import app_state, set_shortlisted_vul_files_count
+from xployt_lvl2.config.settings import settings
 import re
 import traceback
 
@@ -20,7 +22,7 @@ DATA_DIR = _data_dir()
 DATA_DIR.mkdir(exist_ok=True)
 
 # Maximum number of file paths to include in the LLM prompt.  
-SELECT_VUL_FILES_LIMIT = int(os.getenv("SELECT_VUL_FILES_LIMIT", "30"))
+# SELECT_VUL_FILES_LIMIT = int(app_state.select_vul_files_limit, "30"))
 
 def load_file_structure(file_path=DATA_DIR / "file_tree.json"):
     with open(file_path, "r", encoding="utf-8") as f:
@@ -70,15 +72,16 @@ def regex_pre_filter(files: list[str]) -> list[str]:
 
 def filter_files_with_llm(files: list[str]) -> list[str]:
     """Ask the LLM to pick only files likely to contain security-relevant logic."""
-    print("⚙️  Running LLM filter (may be skipped if key missing)")
+    print("Running LLM filter (may be skipped if key missing)")
 
     client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     if not client.api_key:
-        print("⚠️  OPENAI_API_KEY not set – skipping LLM filter.")
+        print("OPENAI_API_KEY not set – skipping LLM filter.")
         return files
 
+    SELECT_VUL_FILES_LIMIT = settings.select_vul_files_limit or 30
     # To control tokens, send at most first 400 file paths, then mention count.
-    print(f"ℹ️  Sending {SELECT_VUL_FILES_LIMIT} files to LLM for filtering")
+    print(f"Sending {SELECT_VUL_FILES_LIMIT} files to LLM for filtering")
     head = files[:SELECT_VUL_FILES_LIMIT]
     remainder = len(files) - len(head)
     file_block = "\n".join(head)
@@ -121,17 +124,17 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
 
         selected = json.loads(raw_content)
         if isinstance(selected, list) and all(isinstance(x, str) for x in selected):
-            print(f"✅ LLM filter selected {len(selected)} files from {len(files)}")
+            print(f"LLM filter selected {len(selected)} files from {len(files)}")
             return selected
         else:
             raise ValueError("Response JSON is not a list of strings")
     except Exception as exc:
-        print("❌  LLM filtering failed – falling back to full list.")
+        print("LLM filtering failed – falling back to full list.")
         print("   Exception:")
         traceback.print_exception(type(exc), exc, exc.__traceback__)
         if raw_content is not None:
             print("   Raw LLM content →\n" + raw_content)
-    print("⚠️  Proceeding with unfiltered file list.")
+    print("Proceeding with unfiltered file list.")
     return files
 
 def run(repo_id: str, codebase_path: str | Path) -> Path:
@@ -141,25 +144,27 @@ def run(repo_id: str, codebase_path: str | Path) -> Path:
     """
 
     file_structure = load_file_structure()
-    print("📂 Flattening file tree…")
+    print("Flattening file tree…")
     files_all = gather_all_files(file_structure, Path(codebase_path))
 
-    # 1️⃣ regex pre-filter
+    # regex pre-filter
     files_regex = regex_pre_filter(files_all)
 
-    # 2️⃣ optional LLM filter
+    # optional LLM filter
     files_final = filter_files_with_llm(files_regex)
+
+    set_shortlisted_vul_files_count(repo_id, len(files_final))
 
     output = {"files_to_analyze": files_final}
 
     out_path = DATA_DIR / "vuln_files_selection.json"
     out_path.write_text(json.dumps(output, indent=2))
-    print(f"💾 Written selection JSON with {len(files_final)} files → {out_path}")
+    print(f"Written selection JSON with {len(files_final)} files → {out_path}")
     return out_path
 
 if __name__ == "__main__":
-    repo_id = _settings.repo_id
-    base_path = _settings.codebase_path
+    repo_id = app_state.repo_id
+    base_path = app_state.codebase_path
     
     if not base_path:
         raise RuntimeError("codebase_path env var must point to repo root.")

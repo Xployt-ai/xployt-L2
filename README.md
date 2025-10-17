@@ -32,7 +32,6 @@ OPENAI_API_KEY=<your key>
 CODEBASE_PATH=<absolute path to the repo you want to analyse>
 REPO_ID=<unique identifier for the repo>
 # optional – limit number of files processed by generate_metadata.py
-METADATA_MAX_FILES=25
 ```
 
 Create a `.env` file in the project root or export them in your shell.

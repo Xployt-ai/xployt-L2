@@ -4,9 +4,10 @@ import hashlib
 import re
 from pathlib import Path
 from typing import Dict, Any, Tuple
-from utils.path_utils import data_dir as _data_dir
+from xployt_lvl2.utils.state_utils import data_dir as _data_dir
 from openai import OpenAI
 from xployt_lvl2.config.settings import settings as _settings
+from xployt_lvl2.config.state import app_state
 
 # --------------------------
 # Paths & directories
@@ -37,8 +38,6 @@ EXT_TO_LANG = {
 
 IMPORT_REGEX = re.compile(r"^(?:import|from)\s+([\w\.\/\-@]+)")
 TOKEN_CHARS_PER_TOKEN = 4  # very rough approximation for GPT-style models
-
-ENV_MAX_FILES = "METADATA_MAX_FILES"
 
 def sha1_file(path: Path) -> str:
     """Return SHA-1 hash of a file (hex)."""
@@ -162,6 +161,7 @@ def load_existing_metadata() -> Dict[str, Dict[str, Any]]:
     if not OUTPUT_FILE.exists():
         return {}
     with OUTPUT_FILE.open("r", encoding="utf-8") as f:
+        print(f"Loading existing metadata from {OUTPUT_FILE}")
         return json.load(f)
 
 
@@ -187,20 +187,25 @@ def _generate_metadata(base_dir: str) -> None:
     seen_set = set()
     paths = [x for x in paths if not (x in seen_set or seen_set.add(x))]
 
-    # Optional limit from .env to process only a subset (useful for testing / cost control)
-    max_files_raw = os.getenv(ENV_MAX_FILES)
-    max_files: int | None = int(max_files_raw) if (max_files_raw and max_files_raw.isdigit()) else None
+    # Optional limit to process only a subset (useful for testing / cost control)
+    max_files = _settings.metadata_max_files
 
     if max_files is not None:
-        print(f"⚙️  Limiting processing to first {max_files} files (METADATA_MAX_FILES)")
+        print(f"Limiting processing to first {max_files} files (_settings.metadata_max_files)")
         paths = paths[:max_files]
+
+    # Publish the distinct file count for progress tracking
+    try:
+        set_metadata_files_count(app_state.repo_id, len(paths))
+    except Exception:
+        pass
 
     existing = load_existing_metadata()
 
     for rel_path in paths:
         full_path = Path(base_dir).joinpath(rel_path.lstrip("/\\"))
         if not full_path.exists():
-            print(f"⚠️  Path missing: {full_path}")
+            print(f"Path missing: {full_path}")
             continue
 
         if full_path.is_dir():
@@ -215,6 +220,7 @@ def _generate_metadata(base_dir: str) -> None:
         if needs_summary:
             description, imports = summarise_and_imports(full_path, client)
         else:
+            print(f"Skipping {rel_path} (no changes detected)")
             description = prev["description"]
             imports = prev.get("imports", extract_imports(full_path))
 
@@ -237,7 +243,7 @@ def _generate_metadata(base_dir: str) -> None:
     with OUTPUT_FILE.open("w", encoding="utf-8") as f:
         json.dump(existing, f, indent=2)
 
-    print(f"\n🎉 Metadata written to {OUTPUT_FILE} (total {len(existing)} entries)")
+    print(f"Metadata written to {OUTPUT_FILE} (total {len(existing)} entries)")
 
 
 # ---------- Public API ---------- #
@@ -245,7 +251,11 @@ def _generate_metadata(base_dir: str) -> None:
 
 def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> Path:
     """Pipeline step entry. Uses settings values by default."""
-    _generate_metadata(str(_settings.codebase_path))
+    if repo_id is not None:
+        app_state.repo_id = repo_id
+    if codebase_path is not None:
+        app_state.codebase_path = Path(codebase_path)
+    _generate_metadata(str(app_state.codebase_path))
     return OUTPUT_FILE
 
 if __name__ == "__main__":

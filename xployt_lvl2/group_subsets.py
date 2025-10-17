@@ -1,12 +1,13 @@
 import json
 from pathlib import Path
 from typing import List
-from utils.path_utils import data_dir as _data_dir
+from utils.state_utils import data_dir as _data_dir
+from xployt_lvl2.config.state import set_subset_count
 from xployt_lvl2.config.settings import settings as _settings
+from xployt_lvl2.config.state import app_state
 from openai import OpenAI
 import re
 
-repo_id = _settings.repo_id
 DATA_DIR = _data_dir()
 METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
 OUTPUT_FILE = DATA_DIR / "file_subsets.json"
@@ -39,6 +40,7 @@ def build_llm_prompt(meta: dict[str, dict]) -> str:
         else:
             lines.append(f"- {path} [{side}/{lang}]: {summary}")
     if len(meta) > MAX_FILES_IN_PROMPT:
+        print(f"Omitted {len(meta) - MAX_FILES_IN_PROMPT} files for brevity")
         lines.append(f"… {len(meta) - MAX_FILES_IN_PROMPT} more files omitted for brevity …")
 
     instructions = (
@@ -68,16 +70,16 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
     """Call OpenAI to propose subsets. Returns list on success, else None."""
     api_key = _settings.openai_api_key
     if not api_key:
-        print("⚠️  OPENAI_API_KEY not set - cannot use LLM grouping")
+        print("OPENAI_API_KEY not set - cannot use LLM grouping")
         return None
 
     client = OpenAI(api_key=api_key)
     prompt = build_llm_prompt(chunk_meta)
-    print("🔍 Asking LLM to group files based on functional connections...")
+    print("Asking LLM to group files based on functional connections...")
 
     try:
         response = client.chat.completions.create(
-            model="gpt-4",  # Using more capable model for complex grouping task
+            model=_settings.llm_model_for_subset_grouping, 
             messages=[
                 {"role": "system", "content": "You are a senior security auditor. Return ONLY valid JSON array output with no additional text."},
                 {"role": "user", "content": prompt},
@@ -86,7 +88,7 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
             max_tokens=1500,
         )
         content = response.choices[0].message.content.strip()
-        print("✅ Received response from LLM")
+        print("Received response from LLM")
         
         # Extract JSON array if wrapped in an object
         if content.startswith("{") and "}" in content:
@@ -123,10 +125,10 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
                 s["subset_id"] = f"{orig_id}-chunk{offset:02d}"
             return subsets
         
-        print("❌ LLM response was not a valid subset array format")
+        print("LLM response was not a valid subset array format")
     except Exception as e:
         # Parsing or API error
-        print(f"❌ Error during LLM grouping: {str(e)}")
+        print(f"Error during LLM grouping: {str(e)}")
         # Debug: print a snippet of the response for diagnosis
         if 'content' in locals():
             print(f"Response snippet: {content[:100]}...")
@@ -145,10 +147,10 @@ def ask_llm_for_grouping(meta: dict[str, dict]) -> list[dict] | None:
         items = items[MAX_FILES_IN_PROMPT:]
         chunk_meta = dict(chunk_pairs)
         chunk_index += 1
-        print(f"📦 Processing chunk {chunk_index} with {len(chunk_meta)} files…")
+        print(f"Processing chunk {chunk_index} with {len(chunk_meta)} files…")
         subsets = _ask_llm_for_grouping_chunk(chunk_meta, chunk_index)
         if not subsets:
-            print("⚠️  LLM returned no data for this chunk; aborting.")
+            print("LLM returned no data for this chunk; aborting.")
             return None
         all_subsets.extend(subsets)
 
@@ -171,7 +173,12 @@ def main():
         )
 
     OUTPUT_FILE.write_text(json.dumps(subsets, indent=2))
-    print(f"✅ Wrote {len(subsets)} subsets to {OUTPUT_FILE}")
+    # Publish subset count for progress tracking
+    try:
+        set_subset_count(app_state.repo_id, len(subsets))
+    except Exception:
+        pass
+    print(f"Wrote {len(subsets)} subsets to {OUTPUT_FILE}")
 
 
 # ---------- Public API ---------- #
@@ -180,9 +187,9 @@ def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> 
     """Pipeline step: group files into subsets; returns output path."""
     
     if repo_id is not None:
-        _settings.repo_id = repo_id
+        app_state.repo_id = repo_id
     if codebase_path is not None:
-        _settings.codebase_path = Path(codebase_path)
+        app_state.codebase_path = Path(codebase_path)
 
     main()
     return OUTPUT_FILE
