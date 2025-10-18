@@ -57,10 +57,24 @@ def build_llm_prompt(meta: dict[str, dict]) -> str:
         "- Group files that share security contexts (e.g., authentication logic)\n"
         "- Aim for 5-15 files per subset (though this can vary)\n"
         "- Every file should be in at least one subset\n\n"
-        "Return ONLY a JSON array where each element has:\n"
-        "- 'subset_id': string (format 'subset-001', 'subset-002', etc.)\n"
-        "- 'file_paths': array of strings (exact file paths from the list)\n"
-        "- 'reason': detailed explanation of the functional connection (e.g., 'End-to-end data flow for login functionality')\n"
+        "Return ONLY a JSON array where each element has the exact schema below. Do NOT include any surrounding prose, explanations, or markdown fences. Return raw JSON only.\n\n"
+        "Schema (exact keys and types):\n"
+        "- subset_id: string (e.g. 'subset-001')\n"
+        "- file_paths: array of strings (each item must be an exact file path listed in the Files section)\n"
+        "- reason: string (a single paragraph explaining why these files belong together)\n\n"
+        "Example (must match this structure exactly):\n"
+        "[\n"
+        "  {\n"
+        "    \"subset_id\": \"subset-001\",\n"
+        "    \"file_paths\": [\"E:/path/to/frontend/login.jsx\", \"E:/path/to/backend/authController.js\"],\n"
+        "    \"reason\": \"End-to-end login flow: frontend form, backend auth controller, and session/token creation.\"\n"
+        "  }\n"
+        "]\n\n"
+        "Important rules:\n"
+        "- Do NOT wrap the JSON in markdown fences (```).\n"
+        "- Do NOT add any text before or after the JSON.\n"
+        "- Each file listed under file_paths must exactly match a path from the Files list.\n"
+        "- Keep subset_id values unique within this response.\n"
     )
 
     return instructions + "\n\nFiles:\n" + "\n".join(lines)
@@ -90,40 +104,33 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
         content = response.choices[0].message.content.strip()
         print("Received response from LLM")
         
-        # Extract JSON array if wrapped in an object
-        if content.startswith("{") and "}" in content:
-            # Look for arrays in the response
-            match = re.search(r'\[\s*{.*}\s*\]', content, re.DOTALL)
-            if match:
-                content = match.group(0)
+        # Clean up the response by removing markdown code fences and other formatting
+        # Check for markdown code blocks (```json or ``` at start/end)
+        if content.startswith('```'):
+            # Find the end of the first line containing the opening fence
+            first_newline = content.find('\n')
+            if first_newline != -1:
+                # Remove the opening fence line (```json)
+                content = content[first_newline + 1:]
+            
+            # Remove closing code fence if present
+            if '```' in content:
+                content = content.rsplit('```', 1)[0].strip()
         
-        # Clean potential JSON issues
-        content = content.replace('\\"', '"')  # Fix escaped quotes
-        content = re.sub(r'(?<!\\)"([^"]*?)\\(?!["\\])', r'"\1\\\\', content)  # Fix unescaped backslashes
-        
-        # Attempt to load JSON; if it fails because of truncation, try to auto-close the array
+        # Attempt to parse the JSON
         try:
             subsets = json.loads(content)
-        except json.JSONDecodeError as e:
-            if "Unterminated string" in str(e) or "Expecting value" in str(e):
-                # Attempt to close the JSON array/brackets and retry
-                fixed = content
-                if not fixed.strip().endswith("]"):
-                    fixed += "]"
-                try:
-                    subsets = json.loads(fixed)
-                except Exception:
-                    raise
-            else:
-                raise
-        
-        # Handle both direct array and wrapped object
-        if isinstance(subsets, list):
+            
             # Ensure unique subset ids by offsetting
             for s in subsets:
                 orig_id = s.get("subset_id", "subset")
                 s["subset_id"] = f"{orig_id}-chunk{offset:02d}"
             return subsets
+        except Exception as e:
+            print(f"JSON parsing error: {str(e)}")
+            # Debug: print a snippet of the response for diagnosis
+            print(f"Response snippet: {content[:500]}...")
+            return None
         
         print("LLM response was not a valid subset array format")
     except Exception as e:
@@ -131,7 +138,7 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
         print(f"Error during LLM grouping: {str(e)}")
         # Debug: print a snippet of the response for diagnosis
         if 'content' in locals():
-            print(f"Response snippet: {content[:100]}...")
+            print(f"Response snippet: {content}")
         return None
 
     return None
@@ -164,13 +171,17 @@ def ask_llm_for_grouping(meta: dict[str, dict]) -> list[dict] | None:
 def main():
     meta = load_metadata()
 
-    # Try LLM-powered grouping with chunking
-    subsets = ask_llm_for_grouping(meta)
-    
-    if not subsets:
-        raise RuntimeError(
-            "LLM grouping returned no data. Ensure OPENAI_API_KEY is set and the LLM prompt is correct."
-        )
+    try:
+        # Try LLM-powered grouping with chunking
+        subsets = ask_llm_for_grouping(meta)
+        
+        if not subsets:
+            raise RuntimeError(
+                "LLM grouping returned no data. Ensure OPENAI_API_KEY is set and the LLM prompt is correct."
+            )
+    except Exception as e:
+        print(f"\nEncountered error during subset grouping: {str(e)}")
+        raise
 
     OUTPUT_FILE.write_text(json.dumps(subsets, indent=2))
     # Publish subset count for progress tracking
