@@ -11,6 +11,7 @@ import traceback
 from sse_starlette.sse import EventSourceResponse  # type: ignore
 from xployt_lvl2.utils.state_utils import data_dir as _data_dir
 from xployt_lvl2.config.state import app_state, get_progress_state, reset_progress_state, get_metadata_files_count, get_subset_count, get_shortlisted_vul_files_count
+from xployt_lvl2.config.settings import settings
 
 app = FastAPI(title="Xployt-lvl2 Pipeline Runner")
 
@@ -29,21 +30,19 @@ PIPELINE_MODULES: List[str] = [
 
 class PipelineRequest(BaseModel):
     id: str
-    path: str
 
-
-def _update_env_vars(repo_id: str, codebase_path: str) -> None:
+def _update_env_vars(repo_id: str) -> None:
     """Update runtime settings"""
 
     # Update central app state
     app_state.repo_id = repo_id
-    app_state.codebase_path = Path(codebase_path)
+    app_state.codebase_path = settings.shared_volume_path / repo_id
 
 
 # ---------- Dynamic import helper ---------- #
 
 
-def _call_pipeline_module(mod_name: str, repo_id: str, codebase_path: str) -> str:
+def _call_pipeline_module(mod_name: str, repo_id: str) -> str:
     """Import *mod_name* and call its `run()` or `main()` entry point.
 
     Captures stdout for logging and returns it as a string.
@@ -55,7 +54,7 @@ def _call_pipeline_module(mod_name: str, repo_id: str, codebase_path: str) -> st
 
         # Prefer explicit run(repo_id, codebase_path)
         if hasattr(module, "run"):
-            module.run(repo_id, codebase_path)
+            module.run(repo_id, app_state.codebase_path)
         else:
             raise AttributeError(f"Module '{mod_name}' has no run() entry point.")
 
@@ -116,7 +115,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
         target_progress, status, msg = step_plan.get(mod, (current_progress, "scanning", f"Running {mod}"))
         try:
             # Run in background
-            task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, mod, req.id, req.path))
+            task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, mod, req.id))
 
             # Determine incremental planning for specific modules
             if mod.endswith("generate_metadata"):
@@ -174,7 +173,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
         per_subset = remaining / max(1, subset_count)
 
         # Start executor in background
-        exec_task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, last_mod, req.id, req.path))
+        exec_task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, last_mod, req.id))
 
         # Stream per-subset progress at 1s intervals
         for i in range(1, subset_count + 1):
@@ -206,7 +205,7 @@ async def run_pipeline_stream(req: "PipelineRequest"):
     """Endpoint that streams pipeline progress via Server-Sent Events (SSE)."""
 
     try:
-        _update_env_vars(req.id, req.path)
+        _update_env_vars(req.id)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to set env vars: {exc}")
 
@@ -221,7 +220,7 @@ async def run_pipeline(req: PipelineRequest):
     """Endpoint to run the pipeline sequentially, halting on failure."""
     # Step 1: update environment
     try:
-        _update_env_vars(req.id, req.path)
+        _update_env_vars(req.id)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to set env vars: {exc}")
 
@@ -232,7 +231,7 @@ async def run_pipeline(req: PipelineRequest):
     for mod in PIPELINE_MODULES:
         print(f"\n▶ Running {mod} …")
         try:
-            last_output = _call_pipeline_module(mod, req.id, req.path)
+            last_output = _call_pipeline_module(mod, req.id, app_state.codebase_path)
             preview = (last_output[:300] + "…") if len(last_output) > 300 else last_output
             print(f"✓ Finished {mod}\n--- output preview ---\n{preview}\n----------------------")
         except Exception as exc:

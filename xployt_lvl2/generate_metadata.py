@@ -241,6 +241,7 @@ def _generate_metadata(base_dir: str) -> None:
         print(f"✅ processed {rel_path}")
 
     with OUTPUT_FILE.open("w", encoding="utf-8") as f:
+        print(f"Writing metadata to {OUTPUT_FILE}")
         json.dump(existing, f, indent=2)
 
     print(f"Metadata written to {OUTPUT_FILE} (total {len(existing)} entries)")

@@ -185,7 +185,7 @@ Successful plain-output example:
 ```json
 {
   "success": true,
-  "output": "✅ Suggestions written to output/idurar-erp-crm_data/pipeline_outputs/..."
+  "output": "Suggestions written to output/idurar-erp-crm_data/pipeline_outputs/..."
 }
 ```
 
