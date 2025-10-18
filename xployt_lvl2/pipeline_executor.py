@@ -3,8 +3,9 @@ import os
 from pathlib import Path
 from typing import Any, List, Dict
 from openai import OpenAI
-from utils.path_utils import data_dir as _data_dir
+from utils.state_utils import data_dir as _data_dir
 from xployt_lvl2.config.settings import settings as _settings
+from xployt_lvl2.config.state import app_state
 
 DATA_DIR = _data_dir()
 SUBSET_FILE = DATA_DIR / "file_subsets.json"
@@ -29,8 +30,8 @@ def load_json(path: Path):
         return json.load(f)
 
 
-def render_prompt(template: str, context: dict[str, Any]) -> str:
-    return template.format(**context)
+# def render_prompt(template: str, context: dict[str, Any]) -> str:
+#     return template.format(**context)
 
 
 def run_stage(client: OpenAI, stage: dict, context: dict[str, Any]) -> str:
@@ -62,7 +63,7 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict, client: OpenAI) -> 
         Path(f).read_text(encoding="utf-8", errors="ignore")
         for f in subset["file_paths"]
         if Path(f).is_file()
-    ])[:8000]  # truncate to reduce tokens
+    ])[:_settings.token_limit_per_subset_files_for_pipeline_execution]  # truncate to reduce tokens
 
     ctx: dict[str, Any] = {"file_contents": code_concat}
     saved_files: List[str] = []
@@ -107,7 +108,7 @@ def _execute_pipelines() -> None:
     # Write aggregated summary
     summary_path = OUTPUT_DIR / "run_summary.json"
     summary_path.write_text(json.dumps(run_results, indent=2))
-    print(f"\n📄 Aggregated summary written to {summary_path}")
+    print(f"\nAggregated summary written to {summary_path}")
 
 
 # ---------- Public API ---------- #
@@ -117,9 +118,9 @@ def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> 
     """Execute LLM pipelines on each subset; returns summary JSON path."""
 
     if repo_id is not None:
-        _settings.repo_id = repo_id
+        app_state.repo_id = repo_id
     if codebase_path is not None:
-        _settings.codebase_path = Path(codebase_path)
+        app_state.codebase_path = Path(codebase_path)
 
     _execute_pipelines()
     return OUTPUT_DIR / "run_summary.json"

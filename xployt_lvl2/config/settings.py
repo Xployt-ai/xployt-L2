@@ -21,7 +21,9 @@ class Settings(BaseSettings):
     # Processing limits
     metadata_max_files: int | None = None
     select_vul_files_limit: int | None = None
-    file_limit_per_subset_when_selecting_pipelines: int | None = None
+    file_limit_per_subset_when_selecting_pipelines: int | None = None # The limit of files to be used for pipeline selection out of all files in a subset
+    token_limit_per_subset_files_for_pipeline_execution: int | None = None # The limit of tokens to be used for pipeline execution out of all files in a subset
+
 
 # load YAML defaults, then let env-vars win
 _settings_dict = yaml.safe_load(_defaults.read_text())
