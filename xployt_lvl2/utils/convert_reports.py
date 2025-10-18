@@ -2,7 +2,7 @@
 import json
 import pathlib
 import os
-from utils.path_utils import data_dir as _data_dir
+from utils.state_utils import data_dir as _data_dir
 import argparse
 
 repo_id = os.getenv("REPO_ID")
@@ -24,7 +24,7 @@ def convert(src: pathlib.Path, out: pathlib.Path) -> None:
             print("✓", md_path.relative_to(out.parent))
             count += 1
         except Exception as exc:
-            print("⚠️  Skipped", f.name, "-", exc)
+            print("Skipped", f.name, "-", exc)
     print(f"\n✔ Converted {count} report(s) → {out}")
 
 if __name__ == "__main__":
