@@ -14,13 +14,14 @@ class Settings(BaseSettings):
     
     # LLM settings
     llm_model: str = "gpt-4o"
-    llm_model_subset_grouping: str = "gpt-4o"
+    llm_model_for_subset_grouping: str = "gpt-4o"
     temperature: float = 0.1
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     
     # Processing limits
     metadata_max_files: int | None = None
     select_vul_files_limit: int | None = None
+    file_limit_per_subset_when_selecting_pipelines: int | None = None
 
 # load YAML defaults, then let env-vars win
 _settings_dict = yaml.safe_load(_defaults.read_text())

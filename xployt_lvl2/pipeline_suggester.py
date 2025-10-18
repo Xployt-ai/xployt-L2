@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 from openai import OpenAI
-from utils.path_utils import data_dir as _data_dir
+from utils.state_utils import data_dir as _data_dir
 from xployt_lvl2.config.settings import settings as _settings
 
 DATA_DIR = _data_dir()
@@ -27,14 +27,14 @@ def load_json(path: Path):
 def subset_summary(subset: dict, metadata: dict) -> str:
     """Return a compact human-readable summary of the subset for the LLM."""
     lines = []
-    for fp in subset["file_paths"][:10]:  # cap at 10 to save tokens
+    for fp in subset["file_paths"][:_settings.file_limit_per_subset_when_selecting_pipelines]:  # cap at 10 to save tokens
         meta = metadata.get(fp, {})
         desc = meta.get("description", "")
         lang = meta.get("language", "")
         side = meta.get("side", "")
         lines.append(f"• {fp} [{side}/{lang}]: {desc}")
-    if len(subset["file_paths"]) > 10:
-        lines.append(f"… {len(subset['file_paths']) - 10} more files omitted for brevity …")
+    if len(subset["file_paths"]) > _settings.file_limit_per_subset_when_selecting_pipelines:
+        lines.append(f"… {len(subset['file_paths']) - _settings.file_limit_per_subset_when_selecting_pipelines} more files omitted for brevity …")
     return "\n".join(lines)
 
 
