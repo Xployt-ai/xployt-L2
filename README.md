@@ -237,6 +237,10 @@ curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
            "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/xployt_lvl2/vuln_node_express"
          }'
 
+curl -X POST "http://127.0.0.1:8000/execute-module" \
+  -H "Content-Type: application/json" \
+  -d '{"id": "vuln_node_express", "module_number": 5}'
+
 curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
      -H "Content-Type: application/json" \
      -d '{
