@@ -60,43 +60,78 @@ def load_json(path: Path):
 
 
 def run_stage(client: OpenAI, stage: dict, context: dict[str, Any]) -> str:
+    """Execute a single pipeline stage with the given context."""
+    
+    # Build user prompt
     prompt = stage["prompt_template"]
     
     # Add example to prompt if available
     if "example" in stage:
-        prompt = f"{prompt}\n\nResponse should follow this example format:\n{json.dumps(stage['example'], indent=2)}"
+        prompt += f"\n\nResponse should follow this example format:\n{json.dumps(stage['example'], indent=2)}"
     
+    # Inject previous output if requested
     if stage.get("inject_previous_output"):
-        # Replace simple placeholder {previous_output}
-        prev = context.get(stage.get("input_tag"))
-        prompt = prompt + "\n" + prev
+        prev = context.get(stage.get("input_tag"), "")
+        if prev:
+            prompt += f"\n{prev}"
     
-    # Inject filenames
+    # Inject file contents
     if "file_contents" in context:
-        prompt = prompt + "\n```\n" + context["file_contents"] + "\n```"
+        prompt += f"\n```\n{context['file_contents']}\n```"
+    
+    # Build system message based on schema requirements
+    schema_name = stage.get("schema")
+    if schema_name and schema_name in SCHEMAS:
+        system_message = _build_schema_system_message(schema_name, stage)
+    else:
+        system_message = "You are a senior security auditor."
     
     # Prepare request parameters
     request_params = {
-        "model": "gpt-4o-mini",
+        "model": "gpt-4o",
         "messages": [
-            {"role": "system", "content": "You are a senior security auditor."},
+            {"role": "system", "content": system_message},
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.2,
-        "max_tokens": 512,
+        "max_tokens": 720,
     }
     
-    # Add response format if schema is provided
-    schema_name = stage.get("schema")
+    # Add JSON response format if schema is provided
     if schema_name and schema_name in SCHEMAS:
         request_params["response_format"] = {"type": "json_object"}
-        request_params["messages"][0]["content"] = (
-            f"You are a senior security auditor. Respond with valid JSON that matches the following schema:\n"
-            f"{json.dumps(SCHEMAS[schema_name], indent=2)}"
-        )
     
     response = client.chat.completions.create(**request_params)
     return response.choices[0].message.content.strip()
+
+
+def _build_schema_system_message(schema_name: str, stage: dict) -> str:
+    """Build a schema-specific system message for the LLM."""
+    example_json = json.dumps(stage.get("example", []), indent=2)
+    schema_json = json.dumps(SCHEMAS[schema_name], indent=2)
+    
+    if schema_name == "extract_vulnerabilities":
+        return (
+            f"You are a senior security auditor. Your task is to identify security vulnerabilities.\n\n"
+            f"IMPORTANT: You MUST format your response as a JSON object with a 'vulnerabilities' key containing an array of vulnerability objects.\n"
+            f"Be brief and concise in your descriptions.\n"
+            f"Example format: {{ \"vulnerabilities\": [{example_json}] }}\n\n"
+            f"Each vulnerability object MUST follow this schema:\n{schema_json}"
+        )
+    elif schema_name == "remediation_suggestions":
+        return (
+            f"You are a senior security auditor. Your task is to suggest remediations for identified vulnerabilities.\n\n"
+            f"IMPORTANT: You MUST format your response as a JSON object with a 'vulnerabilities' key containing an array of vulnerability objects with remediation details.\n"
+            f"Be brief and concise in your descriptions and remediation suggestions.\n"
+            f"Example format: {{ \"vulnerabilities\": [{example_json}] }}\n\n"
+            f"Each vulnerability object MUST follow this schema:\n{schema_json}"
+        )
+    else:
+        # Generic schema message
+        return (
+            f"You are a senior security auditor. Respond with valid JSON that matches the following schema:\n"
+            f"{schema_json}"
+        )
 
 
 def run_pipeline_on_subset(subset: dict, pipeline_def: dict, client: OpenAI) -> list:
@@ -119,30 +154,30 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict, client: OpenAI) -> 
             ctx[tag] = output
             fname = f"{subset['subset_id']}_{pipeline_def['pipeline_id']}_{tag}.json"
             
-            # Parse the output JSON to avoid double-encoding
+            # Parse and save the output
             try:
-                # Try to parse the output as JSON if it has a schema
-                if stage.get("schema"):
-                    parsed_output = json.loads(output)
-                    
-                    # If this is a vulnerability detection output, collect the vulnerabilities
-                    if stage.get("schema") == "remediation_suggestions":
+                # Always try to parse as JSON first
+                parsed_output = json.loads(output)
+                
+                # Collect vulnerabilities if this is a vulnerability detection stage
+                if stage.get("schema") in ["remediation_suggestions", "extract_vulnerabilities"]:
+                    if isinstance(parsed_output, dict) and "vulnerabilities" in parsed_output:
                         vulnerabilities_and_remediations.extend(parsed_output["vulnerabilities"])
-                    
-                    with open(get_output_dir() / fname, 'w', encoding='utf-8') as f:
-                        json.dump(parsed_output, f, indent=2, ensure_ascii=False)
-                else:
-                    # For non-schema outputs, just write as plain text in JSON
-                    with open(get_output_dir() / fname, 'w', encoding='utf-8') as f:
-                        f.write('{\n  "content": ')
-                        f.write(json.dumps(output, indent=2, ensure_ascii=False))
-                        f.write('\n}')
-            except json.JSONDecodeError:
-                # Fallback for non-JSON outputs
+                    elif isinstance(parsed_output, list):
+                        print(f"Warning: LLM output for {fname} is missing 'vulnerabilities' wrapper field")
+                        vulnerabilities_and_remediations.extend(parsed_output)
+                    else:
+                        print(f"Warning: Unable to extract vulnerabilities from {fname}, unexpected format")
+                
+                # Write the parsed JSON directly (no wrapper)
                 with open(get_output_dir() / fname, 'w', encoding='utf-8') as f:
-                    f.write('{\n  "content": ')
-                    f.write(json.dumps(output, indent=2, ensure_ascii=False))
-                    f.write('\n}')
+                    json.dump(parsed_output, f, indent=2, ensure_ascii=False)
+                    
+            except json.JSONDecodeError:
+                # If parsing fails, write as plain text
+                print(f"Warning: Could not parse JSON output for {fname}, saving as plain text")
+                with open(get_output_dir() / fname, 'w', encoding='utf-8') as f:
+                    json.dump({"raw_output": output}, f, indent=2, ensure_ascii=False)
 
             saved_files.append(str(fname))
             if STORAGE_CFG["log_level"] == "info":
