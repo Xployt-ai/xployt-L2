@@ -3,10 +3,10 @@ import json
 from pathlib import Path
 # Third-party
 from dotenv import load_dotenv
-from openai import OpenAI
 from xployt_lvl2.config.state import app_state, set_shortlisted_vul_files_count
 from xployt_lvl2.config.settings import settings
-from utils.state_utils import get_vuln_files_selection_file, get_file_struct_json
+from xployt_lvl2.utils.state_utils import get_vuln_files_selection_file, get_file_struct_json
+from xployt_lvl2.utils.langsmith_wrapper import traced_chat_completion
 import re
 import traceback
 
@@ -67,8 +67,7 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
     """Ask the LLM to pick only files likely to contain security-relevant logic."""
     print("Running LLM filter (may be skipped if key missing)")
 
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    if not client.api_key:
+    if not settings.openai_api_key:
         print("OPENAI_API_KEY not set – skipping LLM filter.")
         return files
 
@@ -101,15 +100,16 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
 
     raw_content: str | None = None
     try:
-        resp = client.chat.completions.create(
-            model="gpt-4o",
+        # Use traced utility function - automatically logs to LangSmith
+        raw_content = traced_chat_completion(
             messages=[
                 {"role": "system", "content": "You are a senior security auditor."},
                 {"role": "user", "content": prompt},
             ],
+            model=settings.llm_model_for_vuln_files_selection,
             temperature=0.2,
-        )
-        raw_content = resp.choices[0].message.content.strip()
+            operation_name="select-vuln-files"
+        ).strip()
 
         # Remove optional ```json fences the model may add despite instructions
         if raw_content.startswith("```"):

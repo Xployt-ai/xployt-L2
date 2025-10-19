@@ -5,9 +5,9 @@ import traceback
 from xployt_lvl2.config.state import set_subset_count
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
-from openai import OpenAI
 import re
 from xployt_lvl2.utils.state_utils import get_subset_file, get_vuln_files_metadata_file
+from xployt_lvl2.utils.langsmith_wrapper import traced_chat_completion
 
 # Max files to include in each LLM prompt chunk to avoid context overflow
 MAX_FILES_IN_PROMPT = 60
@@ -79,26 +79,25 @@ def build_llm_prompt(meta: dict[str, dict]) -> str:
 
 def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> list[dict] | None:
     """Call OpenAI to propose subsets. Returns list on success, else None."""
-    api_key = _settings.openai_api_key
-    if not api_key:
+    if not _settings.openai_api_key:
         print("OPENAI_API_KEY not set - cannot use LLM grouping")
         return None
 
-    client = OpenAI(api_key=api_key)
     prompt = build_llm_prompt(chunk_meta)
     print("Asking LLM to group files based on functional connections...")
 
     try:
-        response = client.chat.completions.create(
-            model=_settings.llm_model_for_subset_grouping, 
+        # Use traced utility function - automatically logs to LangSmith
+        content = traced_chat_completion(
             messages=[
                 {"role": "system", "content": "You are a senior security auditor. Return ONLY valid JSON array output with no additional text."},
                 {"role": "user", "content": prompt},
             ],
+            model=_settings.llm_model_for_subset_grouping,
             temperature=0.2,
             max_tokens=1500,
-        )
-        content = response.choices[0].message.content.strip()
+            operation_name="group-subsets"
+        ).strip()
         print("Received response from LLM")
         
         # Clean up the response by removing markdown code fences and other formatting

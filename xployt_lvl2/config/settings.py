@@ -18,6 +18,16 @@ class Settings(BaseSettings):
     llm_model_for_subset_grouping: str = "gpt-4o"
     temperature: float = 0.1
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
+    llm_model_for_vuln_files_selection: str = "gpt-4o"
+    llm_model_for_subset_grouping: str = "gpt-4o"
+    llm_model_for_pipeline_execution: str = "gpt-4o"
+    llm_model_for_pipeline_suggestion: str = "gpt-4o"
+    llm_model_for_pipeline_execution: str = "gpt-4o"
+
+    # LangSmith settings (optional - for tracking)
+    langsmith_api_key: str | None = os.getenv("LANGSMITH_API_KEY")
+    langsmith_project: str = os.getenv("LANGSMITH_PROJECT", "xployt-lvl2")
+    langsmith_tracing: bool = os.getenv("LANGSMITH_TRACING", "false").lower() == "true"
     
     # Processing limits
     metadata_max_files: int | None = None

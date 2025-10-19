@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 from typing import List
 
-from openai import OpenAI
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.utils.state_utils import get_data_dir, get_subset_file, get_vuln_files_metadata_file, get_suggestions_file
+from xployt_lvl2.utils.langsmith_wrapper import traced_chat_completion
 
 CONFIG_DIR = Path(__file__).resolve().parent / "config"
 PIPELINES_DEF = CONFIG_DIR / "pipelines.json"
@@ -33,7 +33,7 @@ def subset_summary(subset: dict, metadata: dict) -> str:
     return "\n".join(lines)
 
 
-def ask_llm_for_pipelines(client: OpenAI, subset: dict, pipelines: List[dict], metadata: dict) -> List[str]:
+def ask_llm_for_pipelines(subset: dict, pipelines: List[dict], metadata: dict) -> List[str]:
     pipe_desc = "\n".join(
         f"- {p['pipeline_id']}: {p['description']} (targets {', '.join(p['target_vulnerabilities'])})" for p in pipelines
     )
@@ -47,16 +47,17 @@ Here is the code subset description:
 {subset_summary(subset, metadata)}
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
+    # Use traced utility function - automatically logs to LangSmith
+    content = traced_chat_completion(
         messages=[
             {"role": "system", "content": "You are a senior security auditor."},
             {"role": "user", "content": prompt},
         ],
+        model=_settings.llm_model_for_pipeline_suggestion,
         temperature=0.2,
         max_tokens=120,
-    )
-    content = response.choices[0].message.content.strip()
+        operation_name="suggest-pipelines"
+    ).strip()
     # Attempt to parse JSON array
     try:
         parsed = json.loads(content)
@@ -71,15 +72,13 @@ Here is the code subset description:
 # ---------- core implementation ---------- #
 
 def _suggest_pipelines() -> None:
-    client = OpenAI(api_key=_settings.openai_api_key)
-
     subsets = load_json(get_subset_file())
     pipelines = load_json(PIPELINES_DEF)["pipelines"]
     metadata = load_json(get_vuln_files_metadata_file())
 
     results = []
     for subset in subsets:
-        suggested = ask_llm_for_pipelines(client, subset, pipelines, metadata)
+        suggested = ask_llm_for_pipelines(subset, pipelines, metadata)
         results.append({
             "subset_id": subset["subset_id"],
             "suggested_pipelines": suggested,
