@@ -1,12 +1,13 @@
 import json
 from pathlib import Path
 from typing import List
+import traceback
 from xployt_lvl2.config.state import set_subset_count
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
 from openai import OpenAI
 import re
-from utils.state_utils import get_subset_file, get_vuln_files_metadata_file
+from xployt_lvl2.utils.state_utils import get_subset_file, get_vuln_files_metadata_file
 
 # Max files to include in each LLM prompt chunk to avoid context overflow
 MAX_FILES_IN_PROMPT = 60
@@ -124,6 +125,8 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
             return subsets
         except Exception as e:
             print(f"JSON parsing error: {str(e)}")
+            print("Full traceback:")
+            traceback.print_exc()
             # Debug: print a snippet of the response for diagnosis
             print(f"Response snippet: {content[:500]}...")
             return None
@@ -132,6 +135,8 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
     except Exception as e:
         # Parsing or API error
         print(f"Error during LLM grouping: {str(e)}")
+        print("Full traceback:")
+        traceback.print_exc()
         # Debug: print a snippet of the response for diagnosis
         if 'content' in locals():
             print(f"Response snippet: {content}")
@@ -172,11 +177,17 @@ def main():
         subsets = ask_llm_for_grouping(meta)
         
         if not subsets:
-            raise RuntimeError(
-                "LLM grouping returned no data. Ensure OPENAI_API_KEY is set and the LLM prompt is correct."
-            )
+            print("\nLLM grouping returned no data.")
+            print("Possible causes:")
+            print("- OPENAI_API_KEY not set or invalid")
+            print("- LLM API error or timeout")
+            print("- LLM returned invalid JSON format")
+            print("\nCheck the error messages above for details.")
+            raise RuntimeError("LLM grouping failed - see error details above")
     except Exception as e:
         print(f"\nEncountered error during subset grouping: {str(e)}")
+        print("\nFull traceback:")
+        traceback.print_exc()
         raise
 
     OUTPUT_FILE = get_subset_file()

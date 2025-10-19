@@ -9,7 +9,7 @@
         {
           "id": "vuln_detection",
           "title": "Vulnerability Detection",
-          "prompt_template": "Analyze the following code for SQL, NoSQL, and Command Injection vulnerabilities. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level. Give description in simple and concise manner.",
+          "prompt_template": "Analyze the following code for SQL, NoSQL, and Command Injection vulnerabilities. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level. Give description in simple and concise manner. At most give 5 vulnerabilities.",
           "inject_previous_output": false,
           "save_output": true,
           "output_tag": "detected_vulns",
@@ -36,7 +36,7 @@
         {
           "id": "remediation",
           "title": "Remediation Suggestions",
-          "prompt_template": "Suggest concrete remediations for the injection vulnerabilities listed below. Include specific code changes and best practices for each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions. Give description in simple and concise manner.",
+          "prompt_template": "Suggest concrete remediations in brief for the injection vulnerabilities listed below. Include specific code changes and best practices for each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions. Give descriptions and remediations in simple and concise manner.",
           "inject_previous_output": true,
           "input_tag": "detected_vulns",
           "save_output": true,
@@ -72,19 +72,10 @@
       "description": "Audits authentication & authorization mechanisms.",
       "stages": [
         {
-          "id": "auth_map",
-          "title": "Auth Flow Mapping",
-          "prompt_template": "Analyze and describe the authentication and authorization flow in the following code. Identify key components such as login mechanisms, session management, token validation, permission checking, and user role management. Include file paths and line numbers for important authentication functions and middleware.",
-          "inject_previous_output": false,
-          "save_output": true,
-          "output_tag": "auth_flow"
-        },
-        {
           "id": "auth_issues",
           "title": "Auth Vulnerability Detection",
-          "prompt_template": "Based on the described authentication and authorization flow, identify potential security weaknesses and vulnerabilities. Focus on issues like broken authentication, insecure direct object references (IDOR), session hijacking, missing authorization checks, and insecure token management. Format each vulnerability with file path, line number, detailed description, vulnerability type, severity, and confidence level. Give description in simple and concise manner.",
-          "inject_previous_output": true,
-          "input_tag": "auth_flow",
+          "prompt_template": "Analyze the following code for authentication and authorization vulnerabilities. Focus on issues like broken authentication, insecure direct object references (IDOR), session hijacking, missing authorization checks, and insecure token management. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level. Give description in simple and concise manner. At most give 5 vulnerabilities.",
+          "inject_previous_output": false,
           "save_output": true,
           "output_tag": "auth_vulns",
           "schema": "extract_vulnerabilities",
