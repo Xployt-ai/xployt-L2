@@ -4,13 +4,8 @@ from pathlib import Path
 from typing import List
 
 from openai import OpenAI
-from utils.state_utils import data_dir as _data_dir
 from xployt_lvl2.config.settings import settings as _settings
-
-DATA_DIR = _data_dir()
-SUBSETS_FILE = DATA_DIR / "file_subsets.json"
-METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
-OUTPUT_FILE = DATA_DIR / "subset_pipeline_suggestions.json"
+from xployt_lvl2.utils.state_utils import get_data_dir, get_subset_file, get_vuln_files_metadata_file, get_suggestions_file
 
 CONFIG_DIR = Path(__file__).resolve().parent / "config"
 PIPELINES_DEF = CONFIG_DIR / "pipelines.json"
@@ -78,9 +73,9 @@ Here is the code subset description:
 def _suggest_pipelines() -> None:
     client = OpenAI(api_key=_settings.openai_api_key)
 
-    subsets = load_json(SUBSETS_FILE)
+    subsets = load_json(get_subset_file())
     pipelines = load_json(PIPELINES_DEF)["pipelines"]
-    metadata = load_json(METADATA_FILE)
+    metadata = load_json(get_vuln_files_metadata_file())
 
     results = []
     for subset in subsets:
@@ -91,8 +86,9 @@ def _suggest_pipelines() -> None:
         })
         print(f"✅ {subset['subset_id']}: {', '.join(suggested)}")
 
-    OUTPUT_FILE.write_text(json.dumps(results, indent=2))
-    print(f"\n🎉 Suggestions written to {OUTPUT_FILE}")
+    output_file = get_suggestions_file()
+    output_file.write_text(json.dumps(results, indent=2))
+    print(f"\n🎉 Suggestions written to {output_file}")
 
 
 # ---------- Public API ---------- #
@@ -100,7 +96,7 @@ def _suggest_pipelines() -> None:
 def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> Path:
     """Pipeline step: suggest pipelines for each subset and write JSON."""
     _suggest_pipelines()
-    return OUTPUT_FILE
+    return get_suggestions_file()
 
 
 if __name__ == "__main__":

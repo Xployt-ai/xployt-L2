@@ -8,6 +8,40 @@ __all__ = [
     "data_dir",
 ]
 
+def get_pipelines_file():
+    """Get the current pipelines file path"""
+    return Path(__file__).resolve().parent.parent / "config" / "pipelines.json"
+
+def get_file_struct_json():
+    """Get the current file struct json file path"""
+    return get_data_dir() / "file_struct.json"
+    
+def get_vuln_files_selection_file():
+    """Get the current selection file path"""
+    return get_data_dir() / "vuln_files_selection.json"
+
+def get_vuln_files_metadata_file():
+    """Get the current output file path"""
+    return get_data_dir() / "vuln_file_metadata.json"
+
+def get_data_dir():
+    """Get the current data directory based on app_state.repo_id"""
+    return data_dir()
+
+def get_subset_file():
+    """Get the current subset file path"""
+    return get_data_dir() / "file_subsets.json"
+
+def get_suggestions_file():
+    """Get the current suggestions file path"""
+    return get_data_dir() / "subset_pipeline_suggestions.json"
+
+def get_output_dir():
+    """Get the current output directory and ensure it exists"""
+    output_dir = get_data_dir() / "pipeline_outputs"
+    output_dir.mkdir(exist_ok=True)
+    return output_dir
+
 def data_dir() -> Path:
     """Return the base directory where all generated artifacts are stored.
 

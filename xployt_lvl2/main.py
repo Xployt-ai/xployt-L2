@@ -67,6 +67,18 @@ def _call_pipeline_module(mod_name: str, repo_id: str) -> str:
     return buffer.getvalue()
 
 
+def _yield_uniform(progress: int, status: str, message: str, vulnerabilities_and_remediations: list | None = None):
+    payload = {
+        "progress": int(progress),
+        "status": status,
+        "message": message,
+        "vulnerabilities_and_remediations": vulnerabilities_and_remediations if vulnerabilities_and_remediations is not None else [],
+    }
+    payload_json = json.dumps(payload)
+    # Mirror to console at the same time
+    print(payload_json, flush=True)
+    return payload_json
+    
 # ---------- SSE generator ---------- #
 
 async def _pipeline_sse_generator(req: "PipelineRequest"):
@@ -81,17 +93,6 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
     }
     """
 
-    def _yield_uniform(progress: int, status: str, message: str, vulnerabilities_and_remediations: list | None = None):
-        payload = {
-            "progress": int(progress),
-            "status": status,
-            "message": message,
-            "vulnerabilities_and_remediations": vulnerabilities_and_remediations if vulnerabilities_and_remediations is not None else [],
-        }
-        payload_json = json.dumps(payload)
-        # Mirror to console at the same time
-        print(payload_json, flush=True)
-        return payload_json
 
     # Acquire or initialize per-repo progress state and reset fresh run
     reset_progress_state(req.id)
@@ -220,47 +221,6 @@ async def run_pipeline_stream(req: "PipelineRequest"):
     reset_progress_state(req.id)
 
     return EventSourceResponse(_pipeline_sse_generator(req))
-
-
-@app.post("/run-pipeline")
-async def run_pipeline(req: PipelineRequest):
-    """Endpoint to run the pipeline sequentially, halting on failure."""
-    # Step 1: update environment
-    try:
-        _update_env_vars(req.id)
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"Failed to set env vars: {exc}")
-
-    # Reset progress state for this repo run
-    reset_progress_state(req.id)
-
-    last_output = ""
-    for mod in PIPELINE_MODULES:
-        print(f"\n▶ Running {mod} …")
-        try:
-            last_output = _call_pipeline_module(mod, req.id)
-            preview = (last_output[:300] + "…") if len(last_output) > 300 else last_output
-            print(f"✓ Finished {mod}\n--- output preview ---\n{preview}\n----------------------")
-        except Exception as exc:
-            raise HTTPException(
-                status_code=500,
-                detail={
-                    "message": f"Step '{mod}' failed: {exc}",
-                    "output": str(exc),
-                },
-            )
-
-    # Try to return structured summary if pipeline_executor produced one
-    summary_path = _data_dir() / "pipeline_outputs" / "run_summary.json"
-    if summary_path.exists():
-        try:
-            summary_json = json.loads(summary_path.read_text())
-            return {"success": True, "results": summary_json}
-        except Exception:
-            # Fallback to raw output if JSON invalid
-            pass
-
-    return {"success": True, "output": last_output}
 
 
 @app.post("/execute-module")

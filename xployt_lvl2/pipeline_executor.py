@@ -3,17 +3,9 @@ import os
 from pathlib import Path
 from typing import Any, List, Dict, Optional
 from openai import OpenAI
-from utils.state_utils import data_dir as _data_dir
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
-
-DATA_DIR = _data_dir()
-SUBSET_FILE = DATA_DIR / "file_subsets.json"
-SUGGESTIONS_FILE = DATA_DIR / "subset_pipeline_suggestions.json"
-CONFIG_DIR = Path(__file__).resolve().parent / "config"
-PIPELINES_FILE = CONFIG_DIR / "pipelines.json"
-OUTPUT_DIR = DATA_DIR / "pipeline_outputs"
-OUTPUT_DIR.mkdir(exist_ok=True)
+from xployt_lvl2.utils.state_utils import get_output_dir, get_subset_file, get_suggestions_file, get_pipelines_file
 
 STORAGE_CFG = {
     "global_store_enabled": True,
@@ -137,17 +129,17 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict, client: OpenAI) -> 
                     if stage.get("schema") == "remediation_suggestions":
                         vulnerabilities_and_remediations.extend(parsed_output["vulnerabilities"])
                     
-                    with open(OUTPUT_DIR / fname, 'w', encoding='utf-8') as f:
+                    with open(get_output_dir() / fname, 'w', encoding='utf-8') as f:
                         json.dump(parsed_output, f, indent=2, ensure_ascii=False)
                 else:
                     # For non-schema outputs, just write as plain text in JSON
-                    with open(OUTPUT_DIR / fname, 'w', encoding='utf-8') as f:
+                    with open(get_output_dir() / fname, 'w', encoding='utf-8') as f:
                         f.write('{\n  "content": ')
                         f.write(json.dumps(output, indent=2, ensure_ascii=False))
                         f.write('\n}')
             except json.JSONDecodeError:
                 # Fallback for non-JSON outputs
-                with open(OUTPUT_DIR / fname, 'w', encoding='utf-8') as f:
+                with open(get_output_dir() / fname, 'w', encoding='utf-8') as f:
                     f.write('{\n  "content": ')
                     f.write(json.dumps(output, indent=2, ensure_ascii=False))
                     f.write('\n}')
@@ -162,10 +154,10 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict, client: OpenAI) -> 
 def _execute_pipelines() -> list:
     client = OpenAI(api_key=_settings.openai_api_key)
 
-    subsets = {s["subset_id"]: s for s in load_json(SUBSET_FILE)}
-    suggestions = load_json(SUGGESTIONS_FILE)
+    subsets = {s["subset_id"]: s for s in load_json(get_subset_file())}
+    suggestions = load_json(get_suggestions_file())
     pipelines_index = {
-        p["pipeline_id"]: p for p in load_json(PIPELINES_FILE)["pipelines"]
+        p["pipeline_id"]: p for p in load_json(get_pipelines_file())["pipelines"]
     }
 
     all_vulnerabilities_and_remediations = []
@@ -199,7 +191,7 @@ def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> 
     all_vulnerabilities_and_remediations = _execute_pipelines()
     
     # Write vulnerabilities to a dedicated file
-    vulns_path = OUTPUT_DIR / f"{app_state.repo_id}_vulnerabilities.json"
+    vulns_path = get_output_dir() / f"{app_state.repo_id}_vulnerabilities.json"
     with open(vulns_path, 'w', encoding='utf-8') as f:
         json.dump({"vulnerabilities": all_vulnerabilities_and_remediations}, f, indent=2, ensure_ascii=False)
     

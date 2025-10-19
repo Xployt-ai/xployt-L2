@@ -4,9 +4,9 @@ from pathlib import Path
 # Third-party
 from dotenv import load_dotenv
 from openai import OpenAI
-from utils.state_utils import data_dir as _data_dir
 from xployt_lvl2.config.state import app_state, set_shortlisted_vul_files_count
 from xployt_lvl2.config.settings import settings
+from utils.state_utils import get_vuln_files_selection_file, get_file_struct_json
 import re
 import traceback
 
@@ -17,14 +17,7 @@ EXCLUDE_DIRS = {
     "node_modules", ".git", "dist", "build", "__pycache__", ".venv", ".idea", ".vscode", "coverage", "Archive"
 }
 
-# Central data directory
-DATA_DIR = _data_dir()
-DATA_DIR.mkdir(exist_ok=True)
-
-# Maximum number of file paths to include in the LLM prompt.  
-# SELECT_VUL_FILES_LIMIT = int(app_state.select_vul_files_limit, "30"))
-
-def load_file_structure(file_path=DATA_DIR / "file_tree.json"):
+def load_file_structure(file_path=get_file_struct_json()):
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -157,7 +150,7 @@ def run(repo_id: str, codebase_path: str | Path) -> Path:
 
     output = {"files_to_analyze": files_final}
 
-    out_path = DATA_DIR / "vuln_files_selection.json"
+    out_path = get_vuln_files_selection_file()
     out_path.write_text(json.dumps(output, indent=2))
     print(f"Written selection JSON with {len(files_final)} files → {out_path}")
     return out_path

@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
-from utils.state_utils import data_dir as _data_dir
+from xployt_lvl2.utils.state_utils import get_file_struct_json
 
 EXCLUDE_DIRS = {
     "node_modules", ".git", ".next", "dist", "build", "__pycache__",
@@ -56,8 +56,7 @@ def run(repo_id: str, codebase_path: str | Path, depth: int = 6) -> Path:
     if tree is None:
         raise RuntimeError("Unable to generate file tree; result is empty.")
 
-    data_dir = _data_dir()
-    output_path = data_dir / "file_tree.json"
+    output_path = get_file_struct_json()
     output_path.write_text(json.dumps(tree, indent=2))
     return output_path
 

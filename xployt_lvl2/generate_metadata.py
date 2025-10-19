@@ -8,18 +8,11 @@ from xployt_lvl2.utils.state_utils import data_dir as _data_dir
 from openai import OpenAI
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
-
-# --------------------------
-# Paths & directories
-# --------------------------
-DATA_DIR = _data_dir()
-DATA_DIR.mkdir(exist_ok=True)
+from xployt_lvl2.utils.state_utils import get_vuln_files_metadata_file, get_vuln_files_selection_file
 
 # --------------------------
 # Config / constants
 # --------------------------
-SELECTION_FILE = DATA_DIR / "vuln_files_selection.json"
-OUTPUT_FILE = DATA_DIR / "vuln_file_metadata.json"
 BACKEND_ANCHOR = os.sep + "backend" + os.sep
 FRONTEND_ANCHOR = os.sep + "frontend" + os.sep
 
@@ -149,7 +142,7 @@ def summarise_file(path: Path, client: OpenAI) -> str:
 
 
 def load_selection() -> list[str]:
-    with open(SELECTION_FILE, "r", encoding="utf-8") as f:
+    with open(get_vuln_files_selection_file(), "r", encoding="utf-8") as f:
         data = json.load(f)
     if "files_to_analyze" in data:
         return data["files_to_analyze"]
@@ -158,10 +151,10 @@ def load_selection() -> list[str]:
 
 
 def load_existing_metadata() -> Dict[str, Dict[str, Any]]:
-    if not OUTPUT_FILE.exists():
+    if not get_vuln_files_metadata_file().exists():
         return {}
-    with OUTPUT_FILE.open("r", encoding="utf-8") as f:
-        print(f"Loading existing metadata from {OUTPUT_FILE}")
+    with get_vuln_files_metadata_file().open("r", encoding="utf-8") as f:
+        print(f"Loading existing metadata from {get_vuln_files_metadata_file()}")
         return json.load(f)
 
 
@@ -240,11 +233,11 @@ def _generate_metadata(base_dir: str) -> None:
         existing[rel_path] = entry
         print(f"✅ processed {rel_path}")
 
-    with OUTPUT_FILE.open("w", encoding="utf-8") as f:
-        print(f"Writing metadata to {OUTPUT_FILE}")
+    with get_vuln_files_metadata_file().open("w", encoding="utf-8") as f:
+        print(f"Writing metadata to {get_vuln_files_metadata_file()}")
         json.dump(existing, f, indent=2)
 
-    print(f"Metadata written to {OUTPUT_FILE} (total {len(existing)} entries)")
+    print(f"Metadata written to {get_vuln_files_metadata_file()} (total {len(existing)} entries)")
 
 
 # ---------- Public API ---------- #
@@ -257,7 +250,7 @@ def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> 
     if codebase_path is not None:
         app_state.codebase_path = Path(codebase_path)
     _generate_metadata(str(app_state.codebase_path))
-    return OUTPUT_FILE
+    return get_vuln_files_metadata_file()
 
 if __name__ == "__main__":
     run()

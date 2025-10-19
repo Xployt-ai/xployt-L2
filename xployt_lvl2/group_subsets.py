@@ -1,25 +1,21 @@
 import json
 from pathlib import Path
 from typing import List
-from utils.state_utils import data_dir as _data_dir
 from xployt_lvl2.config.state import set_subset_count
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
 from openai import OpenAI
 import re
-
-DATA_DIR = _data_dir()
-METADATA_FILE = DATA_DIR / "vuln_file_metadata.json"
-OUTPUT_FILE = DATA_DIR / "file_subsets.json"
+from utils.state_utils import get_subset_file, get_vuln_files_metadata_file
 
 # Max files to include in each LLM prompt chunk to avoid context overflow
 MAX_FILES_IN_PROMPT = 60
 
 def load_metadata() -> dict[str, dict]:
-    if not METADATA_FILE.exists():
+    if not get_vuln_files_metadata_file().exists():
         raise FileNotFoundError(
-            f"{METADATA_FILE} missing - run generate_metadata.py first")
-    with METADATA_FILE.open("r", encoding="utf-8") as f:
+            f"{get_vuln_files_metadata_file()} missing - run generate_metadata.py first")
+    with get_vuln_files_metadata_file().open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -183,6 +179,7 @@ def main():
         print(f"\nEncountered error during subset grouping: {str(e)}")
         raise
 
+    OUTPUT_FILE = get_subset_file()
     OUTPUT_FILE.write_text(json.dumps(subsets, indent=2))
     # Publish subset count for progress tracking
     try:
@@ -203,7 +200,7 @@ def run(repo_id: str | None = None, codebase_path: str | Path | None = None) -> 
         app_state.codebase_path = Path(codebase_path)
 
     main()
-    return OUTPUT_FILE
+    return get_subset_file()
 
 
 if __name__ == "__main__":
