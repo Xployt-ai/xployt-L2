@@ -22,13 +22,14 @@ SCHEMAS = {
             "type": "object",
             "properties": {
                 "file_path": {"type": "string"},
+                "code_snippet": {"type": "string"},
                 "line": {"type": "integer"},
                 "description": {"type": "string"},
                 "vulnerability": {"type": "string"},
                 "severity": {"type": "string", "enum": ["Low", "Medium", "High", "Critical"]},
                 "confidence_level": {"type": "string", "enum": ["Low", "Medium", "High"]}
             },
-            "required": ["file_path", "line", "description", "vulnerability", "severity", "confidence_level"]
+            "required": ["file_path", "code_snippet", "line", "description", "vulnerability", "severity", "confidence_level"]
         }
     },
     "remediation_suggestions": {
@@ -37,6 +38,7 @@ SCHEMAS = {
             "type": "object",
             "properties": {
                 "file_path": {"type": "string"},
+                "code_snippet": {"type": "string"},
                 "line": {"type": "integer"},
                 "description": {"type": "string"},
                 "vulnerability": {"type": "string"},
@@ -115,6 +117,8 @@ def _build_schema_system_message(schema_name: str, stage: dict) -> str:
             f"You are a senior security auditor. Your task is to identify security vulnerabilities.\n\n"
             f"IMPORTANT: You MUST format your response as a JSON object with a 'vulnerabilities' key containing an array of vulnerability objects.\n"
             f"Be brief and concise in your descriptions.\n"
+            f"At most give 5 vulnerabilities.\n"
+            f"CRITICAL: Extract code snippets EXACTLY as they appear in the source code - do not modify, format, or truncate them.\n"
             f"Example format: {{ \"vulnerabilities\": [{example_json}] }}\n\n"
             f"Each vulnerability object MUST follow this schema:\n{schema_json}"
         )
@@ -122,7 +126,7 @@ def _build_schema_system_message(schema_name: str, stage: dict) -> str:
         return (
             f"You are a senior security auditor. Your task is to suggest remediations for identified vulnerabilities.\n\n"
             f"IMPORTANT: You MUST format your response as a JSON object with a 'vulnerabilities' key containing an array of vulnerability objects with remediation details.\n"
-            f"Be brief and concise in your descriptions and remediation suggestions.\n"
+            f"Be brief and concise in your remediation suggestions.Return other details as is.\n"
             f"Example format: {{ \"vulnerabilities\": [{example_json}] }}\n\n"
             f"Each vulnerability object MUST follow this schema:\n{schema_json}"
         )
