@@ -222,6 +222,29 @@ By default the docs are available at <http://127.0.0.1:8000/docs>.
 curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
      -H "Content-Type: application/json" \
      -d '{
-           "id": "idurar-erp-crm-5",
-           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm"
+           "id": "idurar-erp-crm-5"
+        }'
+
+curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "vuln_node_express"
+         }'
+curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "vuln_node_express",
+           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/xployt_lvl2/vuln_node_express"
+         }'
+
+curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "nodejs-goof"
+         }'
+
+curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+     -H "Content-Type: application/json" \
+     -d '{
+           "id": "Zero-Health"
          }'

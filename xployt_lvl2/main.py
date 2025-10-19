@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import io
 import contextlib
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 import json
 import asyncio
 import traceback
@@ -30,6 +30,12 @@ PIPELINE_MODULES: List[str] = [
 
 class PipelineRequest(BaseModel):
     id: str
+
+
+class ModuleExecuteRequest(BaseModel):
+    id: str
+    module_number: int
+
 
 def _update_env_vars(repo_id: str) -> None:
     """Update runtime settings"""
@@ -71,16 +77,16 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
       "progress": int,          # 0..100
       "status": str,            # "setting up" | "scanning" | "completed"
       "message": str,
-      "vulnerabilities": list   # [] until final step (hook later)
+      "vulnerabilities_and_remediations": list   # [] until final step (hook later)
     }
     """
 
-    def _yield_uniform(progress: int, status: str, message: str, vulnerabilities: list | None = None):
+    def _yield_uniform(progress: int, status: str, message: str, vulnerabilities_and_remediations: list | None = None):
         payload = {
             "progress": int(progress),
             "status": status,
             "message": message,
-            "vulnerabilities": vulnerabilities if vulnerabilities is not None else [],
+            "vulnerabilities_and_remediations": vulnerabilities_and_remediations if vulnerabilities_and_remediations is not None else [],
         }
         payload_json = json.dumps(payload)
         # Mirror to console at the same time
@@ -165,6 +171,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
             return
 
     # Final stage: dynamically spread remaining percentage across subsets
+    vulnerabilities_and_remediations = []
     if last_mod:
         # Determine subsets count using state/cache
         subset_count = state.subset_count
@@ -177,25 +184,25 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
 
         # Stream per-subset progress at 1s intervals
         for i in range(1, subset_count + 1):
-            next_progress = int(min(100, round(current_progress + per_subset * i)))
+            next_progress = int(min(98, round(current_progress + per_subset * i)))
             msg = f"Executing pipelines on subset {i}/{subset_count}"
-            yield _yield_uniform(next_progress if i < subset_count else max(next_progress, 99), "scanning", msg)
+            yield _yield_uniform(next_progress if i < subset_count else max(next_progress, 98), "scanning", msg)
             await asyncio.sleep(1)
 
-        # If executor still running, keep 1s heartbeats at 99%
+        # If executor still running, keep 1s heartbeats at 98%
         while not exec_task.done():
-            yield _yield_uniform(99, "scanning", "Finalizing pipeline execution")
+            yield _yield_uniform(98, "scanning", "Finalizing pipeline execution")
             await asyncio.sleep(1)
 
         # Wait for executor to finish, then finalize
         try:
-            await exec_task
+            vulnerabilities_and_remediations = await exec_task
         except Exception as exc:
-            yield _yield_uniform(99, "scanning", f"Final stage failed: {exc}")
+            yield _yield_uniform(98, "scanning", f"Final stage failed: {exc}")
             return
 
     # Completed
-    yield _yield_uniform(100, "completed", "Pipeline completed", vulnerabilities=[])
+    yield _yield_uniform(100, "completed", "Pipeline completed", vulnerabilities_and_remediations=vulnerabilities_and_remediations)
 
 
 # ---------- SSE Endpoint ---------- #
@@ -231,7 +238,7 @@ async def run_pipeline(req: PipelineRequest):
     for mod in PIPELINE_MODULES:
         print(f"\n▶ Running {mod} …")
         try:
-            last_output = _call_pipeline_module(mod, req.id, app_state.codebase_path)
+            last_output = _call_pipeline_module(mod, req.id)
             preview = (last_output[:300] + "…") if len(last_output) > 300 else last_output
             print(f"✓ Finished {mod}\n--- output preview ---\n{preview}\n----------------------")
         except Exception as exc:
@@ -254,3 +261,52 @@ async def run_pipeline(req: PipelineRequest):
             pass
 
     return {"success": True, "output": last_output}
+
+
+@app.post("/execute-module")
+async def execute_module(req: ModuleExecuteRequest):
+    """Endpoint to execute a specific module by number.
+    
+    Args:
+        req: ModuleExecuteRequest with repo id and module_number (0-indexed)
+    
+    Returns:
+        Output from the executed module
+    """
+    # Update environment variables
+    try:
+        _update_env_vars(req.id)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to set env vars: {exc}")
+    
+    # Validate module number
+    if req.module_number < 0 or req.module_number >= len(PIPELINE_MODULES):
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid module_number. Must be between 0 and {len(PIPELINE_MODULES)-1}"
+        )
+    
+    # Get the module name
+    module_name = PIPELINE_MODULES[req.module_number]
+    
+    # Execute the module
+    try:
+        print(f"\n▶ Executing module {module_name} ...")
+        output = _call_pipeline_module(module_name, req.id)
+        preview = (output[:300] + "...") if len(output) > 300 else output
+        print(f"✓ Finished {module_name}\n--- output preview ---\n{preview}\n----------------------")
+        
+        return {
+            "success": True, 
+            "module_name": module_name,
+            "module_number": req.module_number,
+            "output": output
+        }
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "message": f"Module '{module_name}' execution failed: {exc}",
+                "output": str(exc),
+            },
+        )

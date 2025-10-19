@@ -1,7 +1,7 @@
 # Default configuration values
 shared_volume_path: E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/
-repo_id: idurar-erp-crm-5
-codebase_path: E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm
+repo_id: vuln_node_express
+codebase_path: E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/vuln_node_express
 output_root: output
 llm_model: gpt-4o
 temperature: 0.1

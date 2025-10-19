@@ -7,30 +7,61 @@
       "description": "Detects injection-type vulnerabilities across stack layers.",
       "stages": [
         {
-          "id": "vuln_scan",
-          "title": "Vulnerability Scan",
-          "prompt_template": "Analyze the following code for potential security vulnerabilities.",
+          "id": "vuln_detection",
+          "title": "Vulnerability Detection",
+          "prompt_template": "Analyze the following code for SQL, NoSQL, and Command Injection vulnerabilities. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level.",
           "inject_previous_output": false,
           "save_output": true,
-          "output_tag": "vuln_report"
-        },
-        {
-          "id": "vuln_filter",
-          "title": "OWASP Filtering",
-          "prompt_template": "From the following findings, extract only those related to the OWASP Top 10.",
-          "inject_previous_output": true,
-          "input_tag": "vuln_report",
-          "save_output": true,
-          "output_tag": "owasp_only"
+          "output_tag": "detected_vulns",
+          "schema": "extract_vulnerabilities",
+          "example": [
+            {
+              "file_path": "api/controllers/user.js",
+              "line": 42,
+              "description": "Unsanitized user input directly used in SQL query, allowing potential SQL injection attacks. Code: `const query = 'SELECT * FROM users WHERE username = \"' + username + '\"';`. The user-provided username variable is concatenated directly into the SQL query without validation or sanitization.",
+              "vulnerability": "SQL Injection",
+              "severity": "High",
+              "confidence_level": "High"
+            },
+            {
+              "file_path": "api/services/database.js",
+              "line": 128,
+              "description": "Dynamic query construction using template literals without proper parameterization. Code: `const query = `SELECT * FROM products WHERE category = '${userCategory}'`;`. The userCategory variable comes from user input and is inserted directly into the query string.",
+              "vulnerability": "SQL Injection",
+              "severity": "Medium",
+              "confidence_level": "Medium"
+            }
+          ]
         },
         {
           "id": "remediation",
           "title": "Remediation Suggestions",
-          "prompt_template": "Suggest remediations for the OWASP vulnerabilities listed below.",
+          "prompt_template": "Suggest concrete remediations for the injection vulnerabilities listed below. Include specific code changes, library recommendations, and best practices for each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions.",
           "inject_previous_output": true,
-          "input_tag": "owasp_only",
+          "input_tag": "detected_vulns",
           "save_output": true,
-          "output_tag": "remediation_suggestions"
+          "output_tag": "remediation_suggestions",
+          "schema": "remediation_suggestions",
+          "example": [
+            {
+              "file_path": "api/controllers/user.js",
+              "line": 42,
+              "description": "Unsanitized user input directly used in SQL query, allowing potential SQL injection attacks. Code: `const query = 'SELECT * FROM users WHERE username = \"' + username + '\"';`",
+              "vulnerability": "SQL Injection",
+              "severity": "High",
+              "confidence_level": "High",
+              "remediation": "Replace the direct string concatenation with parameterized queries. For your specific code: Change `const query = 'SELECT * FROM users WHERE username = \"' + username + '\"';` to `const query = 'SELECT * FROM users WHERE username = ?'; db.query(query, [username]);`. This ensures the username value is properly escaped and prevents SQL injection attacks."
+            },
+            {
+              "file_path": "api/services/database.js",
+              "line": 128,
+              "description": "Dynamic query construction using template literals without proper parameterization. Code: `const query = `SELECT * FROM products WHERE category = '${userCategory}'`;`",
+              "vulnerability": "SQL Injection",
+              "severity": "Medium",
+              "confidence_level": "Medium",
+              "remediation": "Replace the template literal approach with parameterized queries. For your code: Change `const query = `SELECT * FROM products WHERE category = '${userCategory}'`;` to `const query = 'SELECT * FROM products WHERE category = ?'; db.query(query, [userCategory]);`. Alternatively, if using an ORM like Sequelize, use: `Product.findAll({ where: { category: userCategory } });` which automatically handles parameter escaping."
+            }
+          ]
         }
       ]
     },
@@ -43,7 +74,7 @@
         {
           "id": "auth_map",
           "title": "Auth Flow Mapping",
-          "prompt_template": "Describe the authentication and authorization flow in the following code.",
+          "prompt_template": "Analyze and describe the authentication and authorization flow in the following code. Identify key components such as login mechanisms, session management, token validation, permission checking, and user role management. Include file paths and line numbers for important authentication functions and middleware.",
           "inject_previous_output": false,
           "save_output": true,
           "output_tag": "auth_flow"
@@ -51,20 +82,60 @@
         {
           "id": "auth_issues",
           "title": "Auth Vulnerability Detection",
-          "prompt_template": "From the described auth flow, identify potential security weaknesses.",
+          "prompt_template": "Based on the described authentication and authorization flow, identify potential security weaknesses and vulnerabilities. Focus on issues like broken authentication, insecure direct object references (IDOR), session hijacking, missing authorization checks, and insecure token management. Format each vulnerability with file path, line number, detailed description, vulnerability type, severity, and confidence level.",
           "inject_previous_output": true,
           "input_tag": "auth_flow",
           "save_output": true,
-          "output_tag": "auth_vulns"
+          "output_tag": "auth_vulns",
+          "schema": "extract_vulnerabilities",
+          "example": [
+            {
+              "file_path": "auth/middleware.js",
+              "line": 25,
+              "description": "Missing token validation allows for JWT token replay attacks. Code: `function verifyToken(token) { const decoded = jwt.verify(token, SECRET_KEY); return decoded; }`. The code only verifies the token signature but does not check if the token has been revoked or expired properly, nor does it validate additional claims.",
+              "vulnerability": "Broken Authentication",
+              "severity": "High",
+              "confidence_level": "High"
+            },
+            {
+              "file_path": "api/routes/user.js",
+              "line": 57,
+              "description": "The endpoint retrieves user data based on user ID from the URL without checking if the requesting user has permission to access this data, enabling IDOR attacks. Code: `router.get('/users/:id', (req, res) => { const userData = getUserById(req.params.id); res.json(userData); });`. No authorization check is performed to verify if the requesting user has permission to access the specified user's data.",
+              "vulnerability": "Insecure Direct Object Reference",
+              "severity": "Medium",
+              "confidence_level": "High"
+            }
+          ]
         },
         {
           "id": "auth_remedy",
           "title": "Remediation Suggestions",
-          "prompt_template": "Suggest remediations for the identified auth vulnerabilities.",
+          "prompt_template": "Suggest detailed remediations for the identified authentication and authorization vulnerabilities. Include specific code changes, security best practices, library recommendations, and implementation patterns to address each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions.",
           "inject_previous_output": true,
           "input_tag": "auth_vulns",
           "save_output": true,
-          "output_tag": "remediation_suggestions"
+          "output_tag": "remediation_suggestions",
+          "schema": "remediation_suggestions",
+          "example": [
+            {
+              "file_path": "auth/middleware.js",
+              "line": 25,
+              "description": "Missing token validation allows for JWT token replay attacks. Code: `function verifyToken(token) { const decoded = jwt.verify(token, SECRET_KEY); return decoded; }`",
+              "vulnerability": "Broken Authentication",
+              "severity": "High",
+              "confidence_level": "High",
+              "remediation": "Enhance your token verification function to check expiration and implement a revocation mechanism. Modify your code to: ```javascript\nfunction verifyToken(token) {\n  // Verify signature and get payload\n  const decoded = jwt.verify(token, SECRET_KEY);\n  \n  // Check expiration explicitly (in addition to JWT's built-in exp check)\n  const currentTime = Math.floor(Date.now() / 1000);\n  if (!decoded.exp || decoded.exp < currentTime) {\n    throw new Error('Token expired');\n  }\n  \n  // Check if token is in blacklist (requires Redis or similar)\n  if (isTokenRevoked(decoded.jti)) {\n    throw new Error('Token revoked');\n  }\n  \n  // Check issuer and audience\n  if (decoded.iss !== 'your-auth-service' || decoded.aud !== 'your-api') {\n    throw new Error('Invalid token issuer or audience');\n  }\n  \n  return decoded;\n}```"
+            },
+            {
+              "file_path": "api/routes/user.js",
+              "line": 57,
+              "description": "The endpoint retrieves user data based on user ID from the URL without checking if the requesting user has permission to access this data, enabling IDOR attacks. Code: `router.get('/users/:id', (req, res) => { const userData = getUserById(req.params.id); res.json(userData); });`",
+              "vulnerability": "Insecure Direct Object Reference",
+              "severity": "Medium",
+              "confidence_level": "High",
+              "remediation": "Add authorization checks to your route handler. Modify your code to: ```javascript\nrouter.get('/users/:id', authenticate, (req, res) => {\n  const requestedUserId = req.params.id;\n  const authenticatedUserId = req.user.id;\n  const userRole = req.user.role;\n  \n  // Self-access or admin role check\n  if (requestedUserId !== authenticatedUserId && userRole !== 'admin') {\n    return res.status(403).json({ error: 'Unauthorized access' });\n  }\n  \n  const userData = getUserById(requestedUserId);\n  res.json(userData);\n});```\nThis ensures only the user themselves or an admin can access user data."
+            }
+          ]
         }
       ]
     }
