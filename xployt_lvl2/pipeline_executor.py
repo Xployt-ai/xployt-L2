@@ -129,7 +129,7 @@ def run_stage(stage: dict, context: dict[str, Any]) -> str:
         ],
         model="gpt-4o",
         temperature=0.2,
-        max_tokens=420,
+        max_tokens=520,
         response_format={"type": "json_object"},
         operation_name=operation_name
     )
