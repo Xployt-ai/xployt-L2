@@ -208,7 +208,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
 
 # ---------- SSE Endpoint ---------- #
 
-@app.post("/run-pipeline-sse")
+@app.post("/llm/scan")
 async def run_pipeline_stream(req: "PipelineRequest"):
     """Endpoint that streams pipeline progress via Server-Sent Events (SSE)."""
 
@@ -270,3 +270,8 @@ async def execute_module(req: ModuleExecuteRequest):
                 "output": str(exc),
             },
         )
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("xployt_lvl2.main:app", host="0.0.0.0", port=8002, reload=True)

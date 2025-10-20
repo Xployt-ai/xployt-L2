@@ -38,20 +38,39 @@ def ask_llm_for_pipelines(subset: dict, pipelines: List[dict], metadata: dict) -
         f"- {p['pipeline_id']}: {p['description']} (targets {', '.join(p['target_vulnerabilities'])})" for p in pipelines
     )
 
-    prompt = f"""You are a senior security auditor. Your task is to choose which analysis pipelines from the list below should be applied to a subset of code files. Return ONLY a JSON array of pipeline_id strings.
+    # Define schema for the expected response
+    schema = {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "description": "Pipeline ID from the available pipelines list"
+        },
+        "description": "Array of pipeline IDs to run on this subset"
+    }
+
+    system_message = f"""You are a senior security auditor. Your task is to choose which analysis pipelines from the list below should be applied to a subset of code files.
 
 Available pipelines:
 {pipe_desc}
 
-Here is the code subset description:
-{subset_summary(subset, metadata)}
+You MUST respond with a JSON array of pipeline_id strings. The response must follow this schema:
+{json.dumps(schema, indent=2)}
+
+IMPORTANT: Return ONLY the raw JSON array. Do NOT wrap it in markdown code blocks, backticks, or any other formatting. The response must be directly parseable as JSON.
+
+Example response: ["pipeline_injection", "pipeline_auth"]
 """
+
+    user_message = f"""Here is the code subset to analyze:
+{subset_summary(subset, metadata)}
+
+Which pipelines should be applied to this subset? Return only the JSON array of pipeline IDs."""
 
     # Use traced utility function - automatically logs to LangSmith
     content = traced_chat_completion(
         messages=[
-            {"role": "system", "content": "You are a senior security auditor."},
-            {"role": "user", "content": prompt},
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": user_message},
         ],
         model=_settings.llm_model_for_pipeline_suggestion,
         temperature=0.2,
@@ -83,11 +102,11 @@ def _suggest_pipelines() -> None:
             "subset_id": subset["subset_id"],
             "suggested_pipelines": suggested,
         })
-        print(f"✅ {subset['subset_id']}: {', '.join(suggested)}")
+        print(f"{subset['subset_id']}: {', '.join(suggested)}\n")
 
     output_file = get_suggestions_file()
     output_file.write_text(json.dumps(results, indent=2))
-    print(f"\n🎉 Suggestions written to {output_file}")
+    print(f"Suggestions written to {output_file}")
 
 
 # ---------- Public API ---------- #

@@ -214,12 +214,12 @@ Then launch FastAPI with live-reload:
 poetry run uvicorn xployt_lvl2.main:app --reload
 ```
 
-By default the docs are available at <http://127.0.0.1:8000/docs>.
+By default the docs are available at <http://127.0.0.1:8002/docs>.
 
 ### Example request (cURL)
 
 ```bash
-curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+curl -X POST http://127.0.0.1:8002/llm/scan \
      -H "Content-Type: application/json" \
      -d '{
            "id": "idurar-erp-crm-5"
@@ -227,23 +227,23 @@ curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
 
 poetry run uvicorn xployt_lvl2.main:app --reload
 
-curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+curl -X POST http://127.0.0.1:8002/llm/scan \
      -H "Content-Type: application/json" \
      -d '{
            "id": "vuln_node_express"
          }'
 
-curl -X POST "http://127.0.0.1:8000/execute-module" \
+curl -X POST "http://127.0.0.1:8002/execute-module" \
   -H "Content-Type: application/json" \
   -d '{"id": "vuln_node_express", "module_number": 5}'
 
-curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+curl -X POST http://127.0.0.1:8002/llm/scan  \
      -H "Content-Type: application/json" \
      -d '{
            "id": "nodejs-goof"
          }'
 
-curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
+curl -X POST http://127.0.0.1:8002/llm/scan \
      -H "Content-Type: application/json" \
      -d '{
            "id": "Zero-Health"

@@ -7,40 +7,17 @@
       "description": "Detects injection-type vulnerabilities across stack layers.",
       "stages": [
         {
-          "id": "vuln_detection",
-          "title": "Vulnerability Detection",
-          "prompt_template": "Analyze the following code for SQL, NoSQL, and Command Injection vulnerabilities. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level. Give description in simple and concise manner. At most give 5 vulnerabilities.",
+          "id": "injection_analysis",
+          "title": "Injection Vulnerability Analysis with Remediation",
+          "prompt_template": "Analyze the following code for SQL, NoSQL, and Command Injection vulnerabilities. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 5 vulnerabilities.",
           "inject_previous_output": false,
           "save_output": true,
-          "output_tag": "detected_vulns",
-          "schema": "extract_vulnerabilities",
+          "output_tag": "vulnerabilities_with_remediations",
           "example": [
             {
               "file_path": "api/controllers/user.js",
               "code_snippet": "const query = 'SELECT * FROM users WHERE username = \"' + username + '\"';",
-              "line": 42,
               "description": "User input concatenated directly into SQL query without sanitization.",
-              "vulnerability": "SQL Injection",
-              "severity": "High",
-              "confidence_level": "High"
-            }
-          ]
-        },
-        {
-          "id": "remediation",
-          "title": "Remediation Suggestions",
-          "prompt_template": "Suggest concrete remediations in brief for the injection vulnerabilities listed below. Include specific code changes and best practices for each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions. Give descriptions and remediations in simple and concise manner.",
-          "inject_previous_output": true,
-          "input_tag": "detected_vulns",
-          "save_output": true,
-          "output_tag": "remediation_suggestions",
-          "schema": "remediation_suggestions",
-          "example": [
-            {
-              "file_path": "api/controllers/user.js",
-              "code_snippet": "const query = 'SELECT * FROM users WHERE username = \"' + username + '\"';",
-              "line": 42,
-              "description": "Unsanitized user input directly used in SQL query, allowing potential SQL injection attacks.",
               "vulnerability": "SQL Injection",
               "severity": "High",
               "confidence_level": "High",
@@ -57,39 +34,17 @@
       "description": "Audits authentication & authorization mechanisms.",
       "stages": [
         {
-          "id": "auth_issues",
-          "title": "Auth Vulnerability Detection",
-          "prompt_template": "Analyze the following code for authentication and authorization vulnerabilities. Focus on issues like broken authentication, insecure direct object references (IDOR), session hijacking, missing authorization checks, and insecure token management. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level. Give description in simple and concise manner. At most give 5 vulnerabilities.",
+          "id": "auth_analysis",
+          "title": "Auth Vulnerability Analysis with Remediation",
+          "prompt_template": "Analyze the following code for authentication and authorization vulnerabilities. Focus on issues like broken authentication, insecure direct object references (IDOR), session hijacking, missing authorization checks, and insecure token management. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 5 vulnerabilities.",
           "inject_previous_output": false,
           "save_output": true,
-          "output_tag": "auth_vulns",
-          "schema": "extract_vulnerabilities",
-          "example": [
-            {
-              "file_path": "auth/middleware.js",
-              "line": 25,
-              "description": "JWT verification lacks expiration and revocation checks. Code: `function verifyToken(token) { const decoded = jwt.verify(token, SECRET_KEY); return decoded; }`",
-              "vulnerability": "Broken Authentication",
-              "severity": "High",
-              "confidence_level": "High"
-            }
-          ]
-        },
-        {
-          "id": "auth_remedy",
-          "title": "Remediation Suggestions",
-          "prompt_template": "Suggest detailed remediations for the identified authentication and authorization vulnerabilities. Include specific code changes, security best practices, library recommendations, and implementation patterns to address each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions. Give description in simple and concise manner.",
-          "inject_previous_output": true,
-          "input_tag": "auth_vulns",
-          "save_output": true,
-          "output_tag": "remediation_suggestions",
-          "schema": "remediation_suggestions",
+          "output_tag": "vulnerabilities_with_remediations",
           "example": [
             {
               "file_path": "auth/middleware.js",
               "code_snippet": "function verifyToken(token) { const decoded = jwt.verify(token, SECRET_KEY); return decoded; }",
-              "line": 25,
-              "description": "Missing token validation allows for JWT token replay attacks.",
+              "description": "JWT verification lacks expiration and revocation checks, allowing token replay attacks.",
               "vulnerability": "Broken Authentication",
               "severity": "High",
               "confidence_level": "High",
@@ -106,39 +61,16 @@
       "description": "Detects Cross-Site Scripting vulnerabilities in frontend and backend code.",
       "stages": [
         {
-          "id": "xss_detection",
-          "title": "XSS Vulnerability Detection",
-          "prompt_template": "Analyze the following code for Cross-Site Scripting (XSS) vulnerabilities. Focus on unsanitized user input rendered in HTML, dangerous DOM manipulation, missing output encoding, and unsafe use of innerHTML or dangerouslySetInnerHTML. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level. Give description in simple and concise manner. At most give 5 vulnerabilities.",
+          "id": "xss_analysis",
+          "title": "XSS Vulnerability Analysis with Remediation",
+          "prompt_template": "Analyze the following code for Cross-Site Scripting (XSS) vulnerabilities. Focus on unsanitized user input rendered in HTML, dangerous DOM manipulation, missing output encoding, and unsafe use of innerHTML or dangerouslySetInnerHTML. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 5 vulnerabilities.",
           "inject_previous_output": false,
           "save_output": true,
-          "output_tag": "detected_vulns",
-          "schema": "extract_vulnerabilities",
+          "output_tag": "vulnerabilities_with_remediations",
           "example": [
             {
               "file_path": "frontend/components/UserProfile.jsx",
               "code_snippet": "<div dangerouslySetInnerHTML={{__html: userBio}} />",
-              "line": 34,
-              "description": "User-provided content rendered without sanitization using dangerouslySetInnerHTML.",
-              "vulnerability": "Cross-Site Scripting",
-              "severity": "High",
-              "confidence_level": "High"
-            }
-          ]
-        },
-        {
-          "id": "xss_remediation",
-          "title": "Remediation Suggestions",
-          "prompt_template": "Suggest concrete remediations in brief for the XSS vulnerabilities listed below. Include specific code changes and best practices for each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions. Give descriptions and remediations in simple and concise manner.",
-          "inject_previous_output": true,
-          "input_tag": "detected_vulns",
-          "save_output": true,
-          "output_tag": "remediation_suggestions",
-          "schema": "remediation_suggestions",
-          "example": [
-            {
-              "file_path": "frontend/components/UserProfile.jsx",
-              "code_snippet": "<div dangerouslySetInnerHTML={{__html: userBio}} />",
-              "line": 34,
               "description": "User-provided content rendered without sanitization using dangerouslySetInnerHTML.",
               "vulnerability": "Cross-Site Scripting",
               "severity": "High",
