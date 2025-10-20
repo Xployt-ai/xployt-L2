@@ -37,6 +37,10 @@ class ModuleExecuteRequest(BaseModel):
     module_number: int
 
 
+class RefindLinesRequest(BaseModel):
+    id: str
+
+
 def _update_env_vars(repo_id: str) -> None:
     """Update runtime settings"""
 
@@ -270,6 +274,108 @@ async def execute_module(req: ModuleExecuteRequest):
                 "output": str(exc),
             },
         )
+
+
+@app.post("/refind-lines")
+async def refind_lines(req: RefindLinesRequest):
+    """Endpoint to re-run fuzzy line matching on all vulnerabilities.
+    
+    Reads the vulnerabilities JSON file for the given repo and runs
+    find_line_number_fuzzy() on each vulnerability to update line numbers.
+    
+    Args:
+        req: RefindLinesRequest with repo id
+    
+    Returns:
+        Updated vulnerabilities with new line numbers
+    """
+    # Import here to avoid circular dependency
+    from xployt_lvl2.pipeline_executor import find_line_number_fuzzy
+    
+    # Update environment variables
+    try:
+        _update_env_vars(req.id)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to set env vars: {exc}")
+    
+    # Construct path to vulnerabilities file
+    vuln_file_path = (
+        settings.shared_volume_path / 
+        "xployt_lvl2" / 
+        "output" / 
+        f"{req.id}_data" / 
+        "pipeline_outputs" / 
+        f"{req.id}_vulnerabilities.json"
+    )
+    
+    # Check if file exists
+    if not vuln_file_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Vulnerabilities file not found: {vuln_file_path}"
+        )
+    
+    # Read vulnerabilities
+    try:
+        with open(vuln_file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            vulnerabilities = data.get("vulnerabilities", [])
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to read vulnerabilities file: {exc}"
+        )
+    
+    # Process each vulnerability and track changes
+    changed_vulnerabilities = []
+    unchanged_count = 0
+    not_found_count = 0
+    
+    for vuln in vulnerabilities:
+        if "code_snippet" in vuln and "file_path" in vuln:
+            code_snippet = vuln["code_snippet"]
+            relative_path = vuln["file_path"]
+            old_line = vuln.get("line", [])
+            
+            # Convert relative path to absolute
+            absolute_path = app_state.codebase_path / relative_path
+            
+            # Run fuzzy matching
+            line_nums = find_line_number_fuzzy(str(absolute_path), code_snippet)
+            
+            if line_nums is not None:
+                # Check if line numbers changed
+                if line_nums != old_line:
+                    # Only include essential information
+                    changed_vulnerabilities.append({
+                        "file_path": relative_path,
+                        "code_snippet": code_snippet,
+                        "old_line": old_line,
+                        "new_line": line_nums
+                    })
+                else:
+                    unchanged_count += 1
+            else:
+                # Could not find line numbers
+                if old_line:  # Had line numbers before but can't find now
+                    changed_vulnerabilities.append({
+                        "file_path": relative_path,
+                        "code_snippet": code_snippet,
+                        "old_line": old_line,
+                        "new_line": []
+                    })
+                not_found_count += 1
+    
+    # Do NOT save to file - just return the differences
+    return {
+        "success": True,
+        "repo_id": req.id,
+        "total_vulnerabilities": len(vulnerabilities),
+        "changed_count": len(changed_vulnerabilities),
+        "unchanged_count": unchanged_count,
+        "not_found_count": not_found_count,
+        "changed_vulnerabilities": changed_vulnerabilities
+    }
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ from difflib import SequenceMatcher
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
 from xployt_lvl2.utils.state_utils import get_output_dir, get_subset_file, get_suggestions_file, get_pipelines_file
-from xployt_lvl2.utils.langsmith_wrapper import traced_chat_completion_raw
+from xployt_lvl2.utils.langsmith_wrapper import traced_chat_completion_raw, traced_gpt5_completion_raw
 
 # Rate limiting: delay between API calls (in seconds)
 RATE_LIMIT_DELAY = 5.0  # Adjust this value to control request rate
@@ -60,37 +60,41 @@ def find_line_number_fuzzy(file_path: str, code_snippet: str, threshold: float =
         with file_path_obj.open("r", encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
         
-        # Normalize the snippet for comparison (remove extra whitespace)
+        # Normalize the snippet for comparison (collapse all whitespace to single spaces)
         snippet_normalized = " ".join(code_snippet.split())
         
         best_match_lines = None
         best_match_ratio = 0.0
+        best_start_line = 0
+        best_end_line = 0
         
-        # Try to match against individual lines first
-        for i, line in enumerate(lines, start=1):
-            line_normalized = " ".join(line.split())
-            ratio = SequenceMatcher(None, snippet_normalized, line_normalized).ratio()
-            
-            if ratio > best_match_ratio and ratio >= threshold:
-                best_match_ratio = ratio
-                best_match_lines = [i]  # Single line match
+        # Use a sliding window approach with variable window sizes
+        # This handles cases where LLM formatting differs from actual code
+        # (e.g., 1 LLM line → multiple file lines, or vice versa)
         
-        # If no good single-line match, try multi-line matching
-        if best_match_lines is None and len(lines) > 1:
-            snippet_lines = code_snippet.strip().split('\n')
-            snippet_len = len(snippet_lines)
-            
-            for i in range(len(lines) - snippet_len + 1):
-                # Get a window of lines
-                window = "".join(lines[i:i + snippet_len])
+        # Try different window sizes from 1 to min(20, total lines)
+        max_window_size = min(7, len(lines))
+        
+        for window_size in range(1, max_window_size + 1):
+            for start_idx in range(len(lines) - window_size + 1):
+                # Get window of lines and normalize
+                window = "".join(lines[start_idx:start_idx + window_size])
                 window_normalized = " ".join(window.split())
                 
+                # Calculate similarity ratio
                 ratio = SequenceMatcher(None, snippet_normalized, window_normalized).ratio()
                 
-                if ratio > best_match_ratio and ratio >= threshold:
+                if ratio > best_match_ratio:
                     best_match_ratio = ratio
-                    # Return list of all lines in the match
-                    best_match_lines = list(range(i + 1, i + snippet_len + 1))
+                    best_start_line = start_idx + 1  # 1-indexed
+                    best_end_line = start_idx + window_size
+        
+        # Return match if it meets the threshold
+        if best_match_ratio >= threshold:
+            if best_start_line == best_end_line:
+                best_match_lines = [best_start_line]
+            else:
+                best_match_lines = list(range(best_start_line, best_end_line + 1))
         
         return best_match_lines
     
@@ -121,18 +125,34 @@ def run_stage(stage: dict, context: dict[str, Any]) -> str:
     # Build operation name for LangSmith tracing
     operation_name = f"pipeline-stage-{stage['id']}"
     
-    # Use LangSmith wrapper for traced execution
-    response = traced_chat_completion_raw(
-        messages=[
-            {"role": "system", "content": system_message},
-            {"role": "user", "content": user_message},
-        ],
-        model="gpt-4o",
-        temperature=0.2,
-        max_tokens=520,
-        response_format={"type": "json_object"},
-        operation_name=operation_name
-    )
+    # Use appropriate wrapper based on model type
+    model = _settings.llm_model_for_pipeline_execution
+    
+    if model in ["gpt-5", "gpt-5-mini"]:
+        # Use GPT-5 specific function (no temperature, uses max_completion_tokens)
+        response = traced_gpt5_completion_raw(
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message},
+            ],
+            model=model,
+            max_completion_tokens=720,
+            # reasoning_effort="low",
+            response_format={"type": "json_object"},
+            operation_name=operation_name
+        )
+    else:
+        # Use standard GPT-4 function
+        response = traced_chat_completion_raw(
+            messages=[
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message},
+            ],
+            model=model,
+            max_tokens=720,
+            response_format={"type": "json_object"},
+            operation_name=operation_name
+        )
     
     return response.choices[0].message.content.strip()
 
@@ -216,14 +236,25 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict) -> list:
                     else:
                         print(f"  ✓ Found lines {line_nums[0]}-{line_nums[-1]} for vulnerability in {file_path}")
                 else:
-                    # Keep existing line number if present, otherwise set to empty list
-                    if "line" not in vuln:
-                        vuln["line"] = []
+                    # Set to empty list to mark for removal
+                    vuln["line"] = []
                     print(f"  ⚠ Could not find exact line for vulnerability in {file_path}")
+    
+    # Filter out vulnerabilities where line numbers couldn't be found
+    original_count = len(vulnerabilities_and_remediations)
+    vulnerabilities_and_remediations = [
+        vuln for vuln in vulnerabilities_and_remediations 
+        if vuln.get("line") and len(vuln.get("line", [])) > 0
+    ]
+    removed_count = original_count - len(vulnerabilities_and_remediations)
+    if removed_count > 0:
+        print(f"\n  🗑️  Removed {removed_count} vulnerability(ies) without valid line numbers")
+    
     # Convert absolute file path to relative filepath with forward slashes
     for vuln in vulnerabilities_and_remediations:
         if "file_path" in vuln:
             vuln["file_path"] = Path(vuln["file_path"]).relative_to(app_state.codebase_path).as_posix()
+    
     return vulnerabilities_and_remediations
 
 

@@ -113,13 +113,25 @@ def traced_chat_completion(
         client = OpenAI(api_key=settings.openai_api_key)
         wrapped_client = wrappers.wrap_openai(client)
         
-        response = wrapped_client.chat.completions.create(
-            model=model or settings.llm_model,
-            messages=messages,
-            temperature=temperature if temperature is not None else settings.temperature,
-            max_tokens=max_tokens,
-            **kwargs
-        )
+        # Build API call parameters - only required params
+        api_params = {
+            "model": model or settings.llm_model,
+            "messages": messages,
+        }
+        
+        # Only include optional parameters if explicitly provided
+        if temperature is not None:
+            api_params["temperature"] = temperature
+            
+        if max_tokens is not None:
+            api_params["max_tokens"] = max_tokens
+        
+        # Add any additional kwargs, filtering out None values
+        for key, value in kwargs.items():
+            if value is not None:
+                api_params[key] = value
+        
+        response = wrapped_client.chat.completions.create(**api_params)
         return response.choices[0].message.content
     
     return _call()
@@ -142,7 +154,7 @@ def traced_chat_completion_raw(
     Args:
         messages: List of message dicts with 'role' and 'content'
         model: Model to use (defaults to settings.llm_model)
-        temperature: Temperature setting (defaults to settings.temperature)
+        temperature: Temperature setting
         max_tokens: Max tokens to generate
         operation_name: Name for this operation in LangSmith traces
         **kwargs: Additional arguments to pass to OpenAI API
@@ -166,13 +178,165 @@ def traced_chat_completion_raw(
         client = OpenAI(api_key=settings.openai_api_key)
         wrapped_client = wrappers.wrap_openai(client)
         
-        return wrapped_client.chat.completions.create(
-            model=model or settings.llm_model,
-            messages=messages,
-            temperature=temperature if temperature is not None else settings.temperature,
-            max_tokens=max_tokens,
-            **kwargs
+        # Build API call parameters - only required params
+        api_params = {
+            "model": model or settings.llm_model,
+            "messages": messages,
+        }
+        
+        # Only include optional parameters if explicitly provided
+        if temperature is not None:
+            api_params["temperature"] = temperature
+            
+        if max_tokens is not None:
+            api_params["max_tokens"] = max_tokens
+        
+        # Add any additional kwargs, filtering out None values
+        for key, value in kwargs.items():
+            if value is not None:
+                api_params[key] = value
+        
+        return wrapped_client.chat.completions.create(**api_params)
+    
+    return _call()
+
+
+def traced_gpt5_completion(
+    messages: list[dict],
+    model: str = "gpt-5",
+    max_completion_tokens: int = None,
+    reasoning_effort: str = None,
+    operation_name: str = "gpt5-call",
+    stream: bool = False,
+    **kwargs
+) -> str:
+    """
+    Make a traced GPT-5 or GPT-5-mini chat completion call.
+    
+    GPT-5 models have different parameters than GPT-4:
+    - Use max_completion_tokens instead of max_tokens
+    - Support reasoning_effort parameter
+    - Don't support temperature parameter
+    
+    Args:
+        messages: List of message dicts with 'role' and 'content'
+        model: Model to use ("gpt-5" or "gpt-5-mini", defaults to "gpt-5")
+        max_completion_tokens: Maximum tokens to generate in completion
+        reasoning_effort: Reasoning effort level (e.g., "minimal", "low", "medium", "high")
+        operation_name: Name for this operation in LangSmith traces
+        stream: Whether to stream the response
+        **kwargs: Additional arguments to pass to OpenAI API
+        
+    Returns:
+        The content of the first choice from the response
+        
+    Example:
+        response = traced_gpt5_completion(
+            messages=[{"role": "user", "content": "Hello"}],
+            model="gpt-5-mini",
+            max_completion_tokens=256,
+            reasoning_effort="minimal",
+            operation_name="fast-gpt5-call"
         )
+    """
+    from langsmith import traceable, wrappers
+    
+    @traceable(name=operation_name, run_type="llm")
+    def _call():
+        # Create and wrap the OpenAI client for automatic tracing
+        client = OpenAI(api_key=settings.openai_api_key)
+        wrapped_client = wrappers.wrap_openai(client)
+        
+        # Build API call parameters - only required params
+        api_params = {
+            "model": model,
+            "messages": messages,
+            "stream": stream,
+        }
+        
+        # Only include optional parameters if explicitly provided
+        if max_completion_tokens is not None:
+            api_params["max_completion_tokens"] = max_completion_tokens
+            
+        if reasoning_effort is not None:
+            api_params["reasoning_effort"] = reasoning_effort
+        
+        # Add any additional kwargs, filtering out None values
+        for key, value in kwargs.items():
+            if value is not None:
+                api_params[key] = value
+        
+        response = wrapped_client.chat.completions.create(**api_params)
+        return response.choices[0].message.content
+    
+    return _call()
+
+
+def traced_gpt5_completion_raw(
+    messages: list[dict],
+    model: str = "gpt-5",
+    max_completion_tokens: int = None,
+    reasoning_effort: str = None,
+    operation_name: str = "gpt5-call",
+    stream: bool = False,
+    **kwargs
+):
+    """
+    Make a traced GPT-5 or GPT-5-mini chat completion call and return the full response object.
+    
+    Same as traced_gpt5_completion but returns the complete response object instead
+    of just the message content.
+    
+    Args:
+        messages: List of message dicts with 'role' and 'content'
+        model: Model to use ("gpt-5" or "gpt-5-mini", defaults to "gpt-5")
+        max_completion_tokens: Maximum tokens to generate in completion
+        reasoning_effort: Reasoning effort level (e.g., "minimal", "low", "medium", "high")
+        operation_name: Name for this operation in LangSmith traces
+        stream: Whether to stream the response
+        **kwargs: Additional arguments to pass to OpenAI API
+        
+    Returns:
+        The full ChatCompletion response object
+        
+    Example:
+        response = traced_gpt5_completion_raw(
+            messages=[{"role": "user", "content": "Hello"}],
+            model="gpt-5-mini",
+            max_completion_tokens=256,
+            reasoning_effort="minimal"
+        )
+        content = response.choices[0].message.content
+        tokens = response.usage.total_tokens
+    """
+    from langsmith import traceable, wrappers
+    
+    @traceable(name=operation_name, run_type="llm")
+    def _call():
+        # Create and wrap the OpenAI client for automatic tracing
+        client = OpenAI(api_key=settings.openai_api_key)
+        wrapped_client = wrappers.wrap_openai(client)
+        
+        # Build API call parameters - only required params
+        api_params = {
+            "model": model,
+            "messages": messages,
+            "stream": stream,
+        }
+        
+        # Only include optional parameters if explicitly provided
+        if max_completion_tokens is not None:
+            api_params["max_completion_tokens"] = max_completion_tokens
+            
+        if reasoning_effort is not None:
+            api_params["reasoning_effort"] = reasoning_effort
+        
+        # Add any additional kwargs, filtering out None values
+        for key, value in kwargs.items():
+            if value is not None:
+                api_params[key] = value
+        
+        return wrapped_client.chat.completions.create(**api_params)
     
     return _call()
 
@@ -181,5 +345,7 @@ __all__ = [
     "get_traced_openai_client",
     "trace_llm_call",
     "traced_chat_completion",
-    "traced_chat_completion_raw"
+    "traced_chat_completion_raw",
+    "traced_gpt5_completion",
+    "traced_gpt5_completion_raw"
 ]

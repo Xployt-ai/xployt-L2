@@ -22,7 +22,6 @@ class Settings(BaseSettings):
     llm_model_for_generate_metadata: str = "gpt-4o-mini"
     llm_model_for_summarise_and_imports: str = "gpt-4o-mini"
     llm_model_for_subset_grouping: str = "gpt-4o"
-    llm_model_for_pipeline_execution: str = "gpt-4o"
     llm_model_for_pipeline_suggestion: str = "gpt-4o"
     llm_model_for_pipeline_execution: str = "gpt-4o"
 
