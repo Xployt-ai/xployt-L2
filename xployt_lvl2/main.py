@@ -29,7 +29,7 @@ PIPELINE_MODULES: List[str] = [
 
 
 class PipelineRequest(BaseModel):
-    id: str
+    path: str
 
 
 class ModuleExecuteRequest(BaseModel):
@@ -99,8 +99,8 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
 
 
     # Acquire or initialize per-repo progress state and reset fresh run
-    reset_progress_state(req.id)
-    state = get_progress_state(req.id)
+    reset_progress_state(req.path)
+    state = get_progress_state(req.path)
 
     # Initial message
     yield _yield_uniform(0, "setting up", "Initializing pipeline")
@@ -126,11 +126,11 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
         target_progress, status, msg = step_plan.get(mod, (current_progress, "scanning", f"Running {mod}"))
         try:
             # Run in background
-            task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, mod, req.id))
+            task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, mod, req.path))
 
             # Determine incremental planning for specific modules
             if mod.endswith("generate_metadata"):
-                steps = get_shortlisted_vul_files_count(req.id)
+                steps = get_shortlisted_vul_files_count(req.path)
                 delta = max(0, target_progress - current_progress)
                 per = delta / max(1, steps)
                 i = 0
@@ -146,7 +146,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
                 await asyncio.sleep(1)
 
             elif mod.endswith("pipeline_suggester"):
-                steps = get_subset_count(req.id)
+                steps = get_subset_count(req.path)
                 delta = max(0, target_progress - current_progress)
                 per = delta / max(1, steps)
                 i = 0
@@ -185,7 +185,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
         per_subset = remaining / max(1, subset_count)
 
         # Start executor in background
-        exec_task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, last_mod, req.id))
+        exec_task = asyncio.create_task(asyncio.to_thread(_call_pipeline_module, last_mod, req.path))
 
         # Stream per-subset progress at 1s intervals
         for i in range(1, subset_count + 1):
@@ -217,12 +217,13 @@ async def run_pipeline_stream(req: "PipelineRequest"):
     """Endpoint that streams pipeline progress via Server-Sent Events (SSE)."""
 
     try:
-        _update_env_vars(req.id)
+        print(req.path)
+        _update_env_vars(req.path)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to set env vars: {exc}")
 
     # Reset progress state for this repo run
-    reset_progress_state(req.id)
+    reset_progress_state(req.path)
 
     return EventSourceResponse(_pipeline_sse_generator(req))
 
@@ -380,4 +381,4 @@ async def refind_lines(req: RefindLinesRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("xployt_lvl2.main:app", host="0.0.0.0", port=8002, reload=True)
+    uvicorn.run("xployt_lvl2.main:app", host="0.0.0.0", port=8003, reload=True)

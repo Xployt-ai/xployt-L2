@@ -40,10 +40,17 @@ def recurse_tree(tree: dict, cwd: Path, out: list[str]):
 def gather_all_files(file_structure: dict, base_path: Path) -> list[str]:
     files: list[str] = []
     recurse_tree(file_structure, base_path, files)
-    # normalise path separators
-    files = [p.replace("\\", "/") for p in files]
-    print(f"🔍 gather_all_files: collected {len(files)} paths before filtering")
-    return files
+    # Convert to relative POSIX-style paths for cross-platform stability
+    rel_files: list[str] = []
+    for p in files:
+        try:
+            rel = Path(p).resolve().relative_to(Path(base_path).resolve()).as_posix()
+        except Exception:
+            # If relative_to fails (e.g., path outside base), fall back to best-effort POSIX string
+            rel = Path(p).name
+        rel_files.append(rel)
+    print(f"🔍 gather_all_files: collected {len(rel_files)} relative paths before filtering")
+    return rel_files
 
 # ---------------------------
 # Regex pre-filter

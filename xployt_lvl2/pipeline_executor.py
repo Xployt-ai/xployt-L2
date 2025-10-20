@@ -162,17 +162,20 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict) -> list:
     # Load code of all files for context with clear file separators
     file_parts = []
     for f in subset["file_paths"]:
-        file_path = Path(f)
-        if file_path.is_file():
+        # Resolve relative paths against the codebase root for cross-platform correctness
+        f_path = Path(f)
+        if not f_path.is_absolute():
+            f_path = (Path(app_state.codebase_path) / f).resolve()
+        if f_path.is_file():
             try:
-                content = file_path.read_text(encoding="utf-8", errors="ignore")
+                content = f_path.read_text(encoding="utf-8", errors="ignore")
                 # Add clear separator with filename
                 file_part = f"\n{'='*5}\n"
-                file_part += f"FILE: {f}\n"
+                file_part += f"FILE: {f_path}\n"
                 file_part += f"{'='*5}\n"
                 file_part += content
                 file_part += f"\n{'='*5}\n"
-                file_part += f"END OF FILE: {f}\n"
+                file_part += f"END OF FILE: {f_path}\n"
                 file_part += f"{'='*5}\n"
                 file_parts.append(file_part)
             except Exception as e:
@@ -253,8 +256,12 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict) -> list:
     # Convert absolute file path to relative filepath with forward slashes
     for vuln in vulnerabilities_and_remediations:
         if "file_path" in vuln:
-            vuln["file_path"] = Path(vuln["file_path"]).relative_to(app_state.codebase_path).as_posix()
-    
+            try:
+                vuln["file_path"] = Path(vuln["file_path"]).relative_to(app_state.codebase_path).as_posix()
+            except Exception:
+                # If not under codebase path, keep POSIX form of the given path
+                vuln["file_path"] = Path(vuln["file_path"]).name
+
     return vulnerabilities_and_remediations
 
 

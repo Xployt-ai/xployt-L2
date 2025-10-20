@@ -9,6 +9,7 @@ from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
 from xployt_lvl2.utils.state_utils import get_vuln_files_metadata_file, get_vuln_files_selection_file
 from xployt_lvl2.utils.langsmith_wrapper import traced_chat_completion
+from xployt_lvl2.utils.paths import normalize_rel, safe_join, to_posix
 
 EXT_TO_LANG = {
     ".js": "js",
@@ -23,7 +24,7 @@ EXT_TO_LANG = {
     ".css": "css",
 }
 
-IMPORT_REGEX = re.compile(r"^(?:import|from)\s+([\w\.\/\-@]+)")
+IMPORT_REGEX = re.compile(r"^(?:import|from)\s+([\w\./\-@]+)")
 TOKEN_CHARS_PER_TOKEN = 4  # very rough approximation for GPT-style models
 
 def sha1_file(path: Path) -> str:
@@ -123,14 +124,15 @@ def _generate_metadata(base_dir: str) -> None:
     paths: list[str] = []
 
     for p in raw_paths:
-        full = Path(base_dir).joinpath(p.lstrip("/\\"))
+        norm = normalize_rel(p)
+        full = safe_join(base_dir, norm)
         if full.is_dir():
             for child in full.rglob("*"):
                 if child.is_file():
-                    rel_child = str(child.relative_to(base_dir)).replace("\\", "/")
+                    rel_child = child.resolve().relative_to(Path(base_dir).resolve()).as_posix()
                     paths.append(rel_child)
         else:
-            paths.append(p)
+            paths.append(norm)
 
     # Deduplicate while preserving order
     seen_set = set()
@@ -152,7 +154,8 @@ def _generate_metadata(base_dir: str) -> None:
     existing = load_existing_metadata()
 
     for rel_path in paths:
-        full_path = Path(base_dir).joinpath(rel_path.lstrip("/\\"))
+        rel_norm = normalize_rel(rel_path)
+        full_path = safe_join(base_dir, rel_norm)
         if not full_path.exists():
             print(f"Path missing: {full_path}")
             continue
@@ -163,13 +166,13 @@ def _generate_metadata(base_dir: str) -> None:
 
         # --- file ---
         sha1 = sha1_file(full_path)
-        prev = existing.get(rel_path, {})
+        prev = existing.get(rel_norm, {})
         needs_summary = prev.get("sha1") != sha1 or "description" not in prev
 
         if needs_summary:
             description, imports = summarise_and_imports(full_path)
         else:
-            print(f"Skipping {rel_path} (no changes detected)")
+            print(f"Skipping {rel_norm} (no changes detected)")
             description = prev["description"]
             imports = prev.get("imports", [])
 
@@ -180,13 +183,13 @@ def _generate_metadata(base_dir: str) -> None:
             "kind": "file",
             "language": detect_language(full_path),
             "loc": contents.count("\n") + 1,
-            "imports": imports,
+            "imports": [str(i) for i in imports],
             "description": description,
             "sha1": sha1,
             "token_estimate": estimate_tokens(char_count),
         }
-        existing[rel_path] = entry
-        print(f"processed {rel_path}")
+        existing[rel_norm] = entry
+        print(f"processed {rel_norm}")
 
     with get_vuln_files_metadata_file().open("w", encoding="utf-8") as f:
         print(f"Writing metadata to {get_vuln_files_metadata_file()}")
