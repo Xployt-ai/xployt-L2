@@ -66,30 +66,14 @@ def summarise_and_imports(path: Path) -> Tuple[str, list[str]]:
         code = f.read(4000)
 
     prompt = (
-        "Analyze the following source code and return a JSON object matching this exact schema:\n\n"
-        "REQUIRED JSON SCHEMA:\n"
-        "{\n"
-        "  \"type\": \"object\",\n"
-        "  \"properties\": {\n"
-        "    \"summary\": {\n"
-        "      \"type\": \"string\",\n"
-        "      \"description\": \"A concise 2-3 sentence description covering: primary purpose, key operations/endpoints/components, and security-critical behaviors (auth, validation, sensitive operations)\"\n"
-        "    },\n"
-        "    \"imports\": {\n"
-        "      \"type\": \"array\",\n"
-        "      \"items\": {\"type\": \"string\"},\n"
-        "      \"description\": \"Array of module/package names explicitly imported (e.g., ['express', 'bcrypt', 'jsonwebtoken'])\"\n"
-        "    }\n"
-        "  },\n"
-        "  \"required\": [\"summary\", \"imports\"]\n"
-        "}\n\n"
-        "EXAMPLE OUTPUT:\n"
-        '{"summary": "This file implements user authentication with JWT tokens. It handles login/logout endpoints and validates credentials against the database. Uses bcrypt for password hashing and includes rate limiting for security.", "imports": ["express", "bcrypt", "jsonwebtoken", "mongoose"]}\n\n'
-        "IMPORTANT:\n"
-        "- Return ONLY the JSON object, no markdown fences (```), no explanations, no additional text\n"
-        "- Ensure valid JSON syntax with proper quotes and commas\n"
-        "- Both 'summary' and 'imports' fields are required\n\n"
-        "CODE TO ANALYZE:\n```\n"
+        "Return a JSON object with this structure:\n"
+        '{"summary": "<2-3 sentence description>", "imports": ["<module1>", "<module2>"]}\n\n'
+        "Requirements:\n"
+        "- summary: Describe file purpose, key operations, and security behaviors\n"
+        "- imports: List all imported modules/packages\n"
+        "- Return ONLY valid JSON, no markdown, no extra text\n\n"
+        "Example: {\"summary\": \"Handles user auth with JWT. Validates credentials and manages sessions.\", \"imports\": [\"express\", \"bcrypt\", \"jwt\"]}\n\n"
+        "Code:\n```\n"
         + code + "\n```"
     )
 

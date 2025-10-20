@@ -1,11 +1,15 @@
 import json
 import os
+import time
 from pathlib import Path
 from typing import Any, List, Dict, Optional
 from openai import OpenAI
 from xployt_lvl2.config.settings import settings as _settings
 from xployt_lvl2.config.state import app_state
 from xployt_lvl2.utils.state_utils import get_output_dir, get_subset_file, get_suggestions_file, get_pipelines_file
+
+# Rate limiting: delay between API calls (in seconds)
+RATE_LIMIT_DELAY = 5.0  # Adjust this value to control request rate
 
 STORAGE_CFG = {
     "global_store_enabled": True,
@@ -61,7 +65,7 @@ def load_json(path: Path):
 #     return template.format(**context)
 
 
-def run_stage(client: OpenAI, stage: dict, context: dict[str, Any]) -> str:
+def run_stage(client: OpenAI, stage: dict, context: dict[str, Any], delay: float = RATE_LIMIT_DELAY) -> str:
     """Execute a single pipeline stage with the given context."""
     
     # Build user prompt
@@ -153,6 +157,8 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict, client: OpenAI) -> 
 
     for stage in pipeline_def["stages"]:
         output = run_stage(client, stage, ctx)
+        # Add delay between requests to avoid rate limits
+        time.sleep(RATE_LIMIT_DELAY)
         if stage.get("save_output"):
             tag = stage["output_tag"]
             ctx[tag] = output

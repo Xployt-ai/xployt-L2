@@ -23,6 +23,15 @@
               "vulnerability": "SQL Injection",
               "severity": "High",
               "confidence_level": "High"
+            },
+            {
+              "file_path": "api/services/database.js",
+              "code_snippet": "const query = `SELECT * FROM products WHERE category = '${userCategory}'`;",
+              "line": 128,
+              "description": "Template literal used in SQL query without parameterization.",
+              "vulnerability": "SQL Injection",
+              "severity": "Medium",
+              "confidence_level": "Medium"
             }
           ]
         },
@@ -45,6 +54,16 @@
               "severity": "High",
               "confidence_level": "High",
               "remediation": "Use parameterized queries: `const query = 'SELECT * FROM users WHERE username = ?'; db.query(query, [username]);`"
+            },
+            {
+              "file_path": "api/services/database.js",
+              "code_snippet": "const query = `SELECT * FROM products WHERE category = '${userCategory}'`;",
+              "line": 128,
+              "description": "Dynamic query construction using template literals without proper parameterization.",
+              "vulnerability": "SQL Injection",
+              "severity": "Medium",
+              "confidence_level": "Medium",
+              "remediation": "Use parameterized queries: `const query = 'SELECT * FROM products WHERE category = ?'; db.query(query, [userCategory]);` or ORM: `Product.findAll({ where: { category: userCategory } });`"
             }
           ]
         }
@@ -72,6 +91,14 @@
               "vulnerability": "Broken Authentication",
               "severity": "High",
               "confidence_level": "High"
+            },
+            {
+              "file_path": "api/routes/user.js",
+              "line": 57,
+              "description": "Endpoint lacks authorization check for user data access. Code: `router.get('/users/:id', (req, res) => { const userData = getUserById(req.params.id); res.json(userData); });`",
+              "vulnerability": "Insecure Direct Object Reference",
+              "severity": "Medium",
+              "confidence_level": "High"
             }
           ]
         },
@@ -94,6 +121,16 @@
               "severity": "High",
               "confidence_level": "High",
               "remediation": "Add expiration and revocation checks: Check `decoded.exp`, validate against token blacklist, and verify `iss` and `aud` claims."
+            },
+            {
+              "file_path": "api/routes/user.js",
+              "code_snippet": "router.get('/users/:id', (req, res) => { const userData = getUserById(req.params.id); res.json(userData); });",
+              "line": 57,
+              "description": "The endpoint retrieves user data based on user ID from the URL without checking if the requesting user has permission to access this data, enabling IDOR attacks.",
+              "vulnerability": "Insecure Direct Object Reference",
+              "severity": "Medium",
+              "confidence_level": "High",
+              "remediation": "Add authorization: Verify `req.params.id === req.user.id` or `req.user.role === 'admin'` before accessing data. Return 403 if unauthorized."
             }
           ]
         }
@@ -122,6 +159,15 @@
               "vulnerability": "Cross-Site Scripting",
               "severity": "High",
               "confidence_level": "High"
+            },
+            {
+              "file_path": "api/routes/search.js",
+              "code_snippet": "res.send('<h1>Search results for: ' + req.query.term + '</h1>');",
+              "line": 18,
+              "description": "User input directly concatenated into HTML response without encoding.",
+              "vulnerability": "Reflected XSS",
+              "severity": "High",
+              "confidence_level": "High"
             }
           ]
         },
@@ -144,6 +190,85 @@
               "severity": "High",
               "confidence_level": "High",
               "remediation": "Use DOMPurify to sanitize HTML: `import DOMPurify from 'dompurify'; <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(userBio)}} />` or render as text: `<div>{userBio}</div>`"
+            },
+            {
+              "file_path": "api/routes/search.js",
+              "code_snippet": "res.send('<h1>Search results for: ' + req.query.term + '</h1>');",
+              "line": 18,
+              "description": "User input directly concatenated into HTML response without encoding.",
+              "vulnerability": "Reflected XSS",
+              "severity": "High",
+              "confidence_level": "High",
+              "remediation": "Use template engine with auto-escaping or encode output: `const escapeHtml = require('escape-html'); res.send('<h1>Search results for: ' + escapeHtml(req.query.term) + '</h1>');`"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "pipeline_name": "Sensitive Data Exposure Checker",
+      "pipeline_id": "pipeline_data_exposure",
+      "target_vulnerabilities": ["Hardcoded Secrets", "Exposed Credentials", "Insecure Data Storage", "Information Disclosure"],
+      "description": "Detects sensitive data exposure including hardcoded secrets, API keys, and insecure storage.",
+      "stages": [
+        {
+          "id": "data_exposure_detection",
+          "title": "Sensitive Data Exposure Detection",
+          "prompt_template": "Analyze the following code for sensitive data exposure vulnerabilities. Focus on hardcoded API keys, passwords, secrets, database credentials, exposed environment variables, insecure data transmission, and logging of sensitive information. Format each vulnerability with file path, line number, description, vulnerability type, severity, and confidence level. Give description in simple and concise manner. At most give 5 vulnerabilities.",
+          "inject_previous_output": false,
+          "save_output": true,
+          "output_tag": "detected_vulns",
+          "schema": "extract_vulnerabilities",
+          "example": [
+            {
+              "file_path": "config/database.js",
+              "code_snippet": "const DB_PASSWORD = 'mySecretPassword123';",
+              "line": 5,
+              "description": "Database password hardcoded in source code.",
+              "vulnerability": "Hardcoded Secrets",
+              "severity": "Critical",
+              "confidence_level": "High"
+            },
+            {
+              "file_path": "api/services/payment.js",
+              "code_snippet": "console.log('Processing payment:', cardNumber, cvv);",
+              "line": 42,
+              "description": "Sensitive payment information logged to console.",
+              "vulnerability": "Information Disclosure",
+              "severity": "High",
+              "confidence_level": "High"
+            }
+          ]
+        },
+        {
+          "id": "data_exposure_remediation",
+          "title": "Remediation Suggestions",
+          "prompt_template": "Suggest concrete remediations in brief for the sensitive data exposure vulnerabilities listed below. Include specific code changes and best practices for each vulnerability. Maintain all the existing vulnerability information and add detailed remediation instructions. Give descriptions and remediations in simple and concise manner.",
+          "inject_previous_output": true,
+          "input_tag": "detected_vulns",
+          "save_output": true,
+          "output_tag": "remediation_suggestions",
+          "schema": "remediation_suggestions",
+          "example": [
+            {
+              "file_path": "config/database.js",
+              "code_snippet": "const DB_PASSWORD = 'mySecretPassword123';",
+              "line": 5,
+              "description": "Database password hardcoded in source code.",
+              "vulnerability": "Hardcoded Secrets",
+              "severity": "Critical",
+              "confidence_level": "High",
+              "remediation": "Use environment variables: `const DB_PASSWORD = process.env.DB_PASSWORD;` and store in .env file (add .env to .gitignore)."
+            },
+            {
+              "file_path": "api/services/payment.js",
+              "code_snippet": "console.log('Processing payment:', cardNumber, cvv);",
+              "line": 42,
+              "description": "Sensitive payment information logged to console.",
+              "vulnerability": "Information Disclosure",
+              "severity": "High",
+              "confidence_level": "High",
+              "remediation": "Remove sensitive data from logs: `console.log('Processing payment for card ending in:', cardNumber.slice(-4));` or use secure logging with redaction."
             }
           ]
         }
