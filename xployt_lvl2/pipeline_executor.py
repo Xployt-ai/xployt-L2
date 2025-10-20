@@ -96,7 +96,7 @@ def run_stage(client: OpenAI, stage: dict, context: dict[str, Any]) -> str:
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.2,
-        "max_tokens": 720,
+        "max_tokens": 420,
     }
     
     # Add JSON response format if schema is provided

@@ -95,7 +95,7 @@ def summarise_and_imports(path: Path) -> Tuple[str, list[str]]:
 
     content = traced_chat_completion(
         messages=[
-            {"role": "system", "content": "You are a senior application security engineer."},
+            {"role": "system", "content": "You are a senior application security engineer. Return ONLY valid JSON, nothing else."},
             {"role": "user", "content": prompt},
         ],
         model=_settings.llm_model_for_summarise_and_imports,
@@ -109,7 +109,7 @@ def summarise_and_imports(path: Path) -> Tuple[str, list[str]]:
     imports = data.get("imports", [])
     
     if not isinstance(summary, str) or not isinstance(imports, list):
-        raise ValueError(f"Invalid response format from LLM for {path}: expected 'summary' (str) and 'imports' (list)")
+        raise ValueError(f"Invalid response format from LLM for {path}: expected 'summary' (str) and 'imports' (list). Got: {data}")
     
     imports = [str(i) for i in imports]
     return summary, imports
