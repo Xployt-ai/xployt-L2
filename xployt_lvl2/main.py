@@ -76,7 +76,7 @@ def _yield_uniform(progress: int, status: str, message: str, vulnerabilities_and
         "progress": int(progress),
         "status": status,
         "message": message,
-        "vulnerabilities_and_remediations": vulnerabilities_and_remediations if vulnerabilities_and_remediations is not None else [],
+        "vulnerabilities": vulnerabilities_and_remediations if vulnerabilities_and_remediations is not None else [],
     }
     payload_json = json.dumps(payload)
     # Mirror to console at the same time

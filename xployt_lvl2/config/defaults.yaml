@@ -1,7 +1,6 @@
 # Default configuration values
-shared_volume_path: E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/
+shared_volume_path: /Users/ashjay/Desktop/Projects/xployt/xployt-main-server/local_storage/repos/
 repo_id: vuln_node_express
-codebase_path: E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/vuln_node_express
 output_root: output
 llm_model: gpt-4o
 temperature: 0.1
