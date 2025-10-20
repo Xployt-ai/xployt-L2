@@ -45,11 +45,15 @@ def get_output_dir():
 def data_dir() -> Path:
     """Return the base directory where all generated artifacts are stored.
 
-    Structure: output/<repo_id>_data  (or output/data if repo_id is not set)
-    Ensures both the parent `output/` and the repo_ided sub-directory exist.
+    Structure: <scanner_root>/output/<repo_id>_data
+    Always creates output inside the scanner's codebase for deterministic behavior.
     """
+    # Get the scanner's root directory (xployt_lvl2 project root)
+    scanner_root = Path(__file__).resolve().parent.parent.parent
     repo_id = app_state.repo_id
-    root = Path("output")
+    
+    # Create output directory inside the scanner's codebase
+    root = scanner_root / "output"
     root.mkdir(exist_ok=True)
 
     dir_name = f"{repo_id}_data" if repo_id else "data"
