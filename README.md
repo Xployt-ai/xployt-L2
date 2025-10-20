@@ -222,7 +222,7 @@ By default the docs are available at <http://127.0.0.1:8003/docs>.
 curl -X POST http://127.0.0.1:8003/llm/scan \
      -H "Content-Type: application/json" \
      -d '{
-           "path": "idurar-erp-crm-5"
+           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/idurar-erp-crm-5"
         }'
 
 poetry run uvicorn xployt_lvl2.main:app --reload
@@ -230,21 +230,21 @@ poetry run uvicorn xployt_lvl2.main:app --reload
 curl -X POST http://127.0.0.1:8003/llm/scan \
      -H "Content-Type: application/json" \
      -d '{
-           "path": "vuln_node_express"
+           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/vuln_node_express"
          }'
 
 curl -X POST "http://127.0.0.1:8003/execute-module" \
   -H "Content-Type: application/json" \
-  -d '{"path": "vuln_node_express", "module_number": 5}'
+  -d '{"path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/vuln_node_express", "module_number": 5}'
 
 curl -X POST http://127.0.0.1:8003/llm/scan  \
      -H "Content-Type: application/json" \
      -d '{
-           "path": "nodejs-goof"
+           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/nodejs-goof"
          }'
 
 curl -X POST http://127.0.0.1:8003/llm/scan \
      -H "Content-Type: application/json" \
      -d '{
-           "path": "Zero-Health"
+           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/Zero-Health"
          }'

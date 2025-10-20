@@ -46,7 +46,7 @@ def _update_env_vars(repo_id: str) -> None:
 
     # Update central app state
     app_state.repo_id = repo_id
-    app_state.codebase_path = settings.shared_volume_path / repo_id
+    app_state.codebase_path = repo_id
 
 
 # ---------- Dynamic import helper ---------- #
