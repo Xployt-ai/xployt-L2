@@ -9,7 +9,7 @@
         {
           "id": "injection_analysis",
           "title": "Injection Vulnerability Analysis with Remediation",
-          "prompt_template": "Analyze the following code for SQL, NoSQL, and Command Injection vulnerabilities. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 5 vulnerabilities.",
+          "prompt_template": "Analyze the following code for SQL, NoSQL, and Command Injection vulnerabilities. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 3 vulnerabilities.",
           "inject_previous_output": false,
           "save_output": true,
           "output_tag": "vulnerabilities_with_remediations",
@@ -36,7 +36,7 @@
         {
           "id": "auth_analysis",
           "title": "Auth Vulnerability Analysis with Remediation",
-          "prompt_template": "Analyze the following code for authentication and authorization vulnerabilities. Focus on issues like broken authentication, insecure direct object references (IDOR), session hijacking, missing authorization checks, and insecure token management. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 5 vulnerabilities.",
+          "prompt_template": "Analyze the following code for authentication and authorization vulnerabilities. Focus on issues like broken authentication, insecure direct object references (IDOR), session hijacking, missing authorization checks, and insecure token management. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 3 vulnerabilities.",
           "inject_previous_output": false,
           "save_output": true,
           "output_tag": "vulnerabilities_with_remediations",
@@ -63,7 +63,7 @@
         {
           "id": "xss_analysis",
           "title": "XSS Vulnerability Analysis with Remediation",
-          "prompt_template": "Analyze the following code for Cross-Site Scripting (XSS) vulnerabilities. Focus on unsanitized user input rendered in HTML, dangerous DOM manipulation, missing output encoding, and unsafe use of innerHTML or dangerouslySetInnerHTML. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 5 vulnerabilities.",
+          "prompt_template": "Analyze the following code for Cross-Site Scripting (XSS) vulnerabilities. Focus on unsanitized user input rendered in HTML, dangerous DOM manipulation, missing output encoding, and unsafe use of innerHTML or dangerouslySetInnerHTML. For each vulnerability found, provide the file path, code snippet, description, vulnerability type, severity, confidence level, AND a concrete remediation suggestion. Give descriptions and remediations in simple and concise manner. At most give 3 vulnerabilities.",
           "inject_previous_output": false,
           "save_output": true,
           "output_tag": "vulnerabilities_with_remediations",
