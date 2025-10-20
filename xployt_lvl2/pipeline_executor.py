@@ -114,8 +114,7 @@ def run_stage(stage: dict, context: dict[str, Any]) -> str:
     # Add example (always present)
     example_json = json.dumps(stage["example"], indent=2)
     system_message += f"\n\nBelow is an example response. Use it as a reference only:"
-    system_message += f"\n\n{{ \"vulnerabilities\": [{example_json}] }}"
-    
+    system_message += f"\n\n{example_json}"
     # Build user message: only file contents
     user_message = f"```\n{context['file_contents']}\n```"
     
@@ -221,7 +220,10 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict) -> list:
                     if "line" not in vuln:
                         vuln["line"] = []
                     print(f"  ⚠ Could not find exact line for vulnerability in {file_path}")
-
+    # Convert absolute file path to relative filepath with forward slashes
+    for vuln in vulnerabilities_and_remediations:
+        if "file_path" in vuln:
+            vuln["file_path"] = Path(vuln["file_path"]).relative_to(app_state.codebase_path).as_posix()
     return vulnerabilities_and_remediations
 
 
