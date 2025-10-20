@@ -6,5 +6,5 @@ output_root: output
 llm_model: gpt-4o
 temperature: 0.1
 metadata_max_files: 30
-select_vul_files_limit: 60
-file_limit_per_subset_when_selecting_pipelines: 20
+select_vul_files_limit: 30
+file_limit_per_subset_when_selecting_pipelines: 8
