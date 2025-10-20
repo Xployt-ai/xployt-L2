@@ -52,23 +52,27 @@ def _update_env_vars(repo_id: str) -> None:
 # ---------- Dynamic import helper ---------- #
 
 
-def _call_pipeline_module(mod_name: str, repo_id: str) -> str:
+def _call_pipeline_module(mod_name: str, repo_id: str) -> tuple[str, any]:
     """Import *mod_name* and call its `run()` or `main()` entry point.
 
-    Captures stdout for logging and returns it as a string.
+    Captures stdout for logging and returns both stdout and the module's return value.
+    
+    Returns:
+        tuple: (stdout_string, return_value)
     """
 
     buffer = io.StringIO()
+    return_value = None
     with contextlib.redirect_stdout(buffer):
         module = importlib.import_module(mod_name)
 
         # Prefer explicit run(repo_id, codebase_path)
         if hasattr(module, "run"):
-            module.run(repo_id, app_state.codebase_path)
+            return_value = module.run(repo_id, app_state.codebase_path)
         else:
             raise AttributeError(f"Module '{mod_name}' has no run() entry point.")
 
-    return buffer.getvalue()
+    return buffer.getvalue(), return_value
 
 
 def _yield_uniform(progress: int, status: str, message: str, vulnerabilities_and_remediations: list | None = None):
@@ -140,7 +144,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
                     i += 1
                     await asyncio.sleep(1)
                 # Ensure task completion (propagate exceptions)
-                await task
+                stdout, _ = await task  # Unpack tuple, ignore return value for non-executor modules
                 current_progress = target_progress
                 yield _yield_uniform(current_progress, status, msg)
                 await asyncio.sleep(1)
@@ -156,7 +160,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
                     i += 1
                     await asyncio.sleep(1)
                 # Ensure task completion
-                await task
+                stdout, _ = await task  # Unpack tuple, ignore return value for non-executor modules
                 current_progress = target_progress
                 yield _yield_uniform(current_progress, status, msg)
                 await asyncio.sleep(1)
@@ -166,7 +170,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
                 while not task.done():
                     yield _yield_uniform(current_progress, status, msg)
                     await asyncio.sleep(1)
-                await task
+                stdout, _ = await task  # Unpack tuple, ignore return value for non-executor modules
                 current_progress = target_progress
                 yield _yield_uniform(current_progress, status, msg)
                 await asyncio.sleep(1)
@@ -201,7 +205,7 @@ async def _pipeline_sse_generator(req: "PipelineRequest"):
 
         # Wait for executor to finish, then finalize
         try:
-            vulnerabilities_and_remediations = await exec_task
+            stdout, vulnerabilities_and_remediations = await exec_task  # Unpack tuple to get actual return value
         except Exception as exc:
             yield _yield_uniform(98, "scanning", f"Final stage failed: {exc}")
             return
@@ -257,15 +261,16 @@ async def execute_module(req: ModuleExecuteRequest):
     # Execute the module
     try:
         print(f"\n▶ Executing module {module_name} ...")
-        output = _call_pipeline_module(module_name, req.id)
-        preview = (output[:300] + "...") if len(output) > 300 else output
+        stdout, return_value = _call_pipeline_module(module_name, req.id)
+        preview = (stdout[:300] + "...") if len(stdout) > 300 else stdout
         print(f"✓ Finished {module_name}\n--- output preview ---\n{preview}\n----------------------")
         
         return {
             "success": True, 
             "module_name": module_name,
             "module_number": req.module_number,
-            "output": output
+            "output": stdout,
+            "return_value": return_value
         }
     except Exception as exc:
         raise HTTPException(

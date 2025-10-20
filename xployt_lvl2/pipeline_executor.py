@@ -73,7 +73,7 @@ def find_line_number_fuzzy(file_path: str, code_snippet: str, threshold: float =
         # (e.g., 1 LLM line → multiple file lines, or vice versa)
         
         # Try different window sizes from 1 to min(20, total lines)
-        max_window_size = min(7, len(lines))
+        max_window_size = min(5, len(lines))
         
         for window_size in range(1, max_window_size + 1):
             for start_idx in range(len(lines) - window_size + 1):
@@ -235,13 +235,13 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict) -> list:
                 if line_nums is not None:
                     vuln["line"] = line_nums
                     if len(line_nums) == 1:
-                        print(f"  ✓ Found line {line_nums[0]} for vulnerability in {file_path}")
+                        print(f"Found line {line_nums[0]} for vulnerability in {file_path}")
                     else:
-                        print(f"  ✓ Found lines {line_nums[0]}-{line_nums[-1]} for vulnerability in {file_path}")
+                        print(f"Found lines {line_nums[0]}-{line_nums[-1]} for vulnerability in {file_path}")
                 else:
                     # Set to empty list to mark for removal
                     vuln["line"] = []
-                    print(f"  ⚠ Could not find exact line for vulnerability in {file_path}")
+                    print(f"Could not find exact line for vulnerability in {file_path}")
     
     # Filter out vulnerabilities where line numbers couldn't be found
     original_count = len(vulnerabilities_and_remediations)
@@ -251,7 +251,7 @@ def run_pipeline_on_subset(subset: dict, pipeline_def: dict) -> list:
     ]
     removed_count = original_count - len(vulnerabilities_and_remediations)
     if removed_count > 0:
-        print(f"\n  🗑️  Removed {removed_count} vulnerability(ies) without valid line numbers")
+        print(f"\nRemoved {removed_count} vulnerability(ies) without valid line numbers")
     
     # Convert absolute file path to relative filepath with forward slashes
     for vuln in vulnerabilities_and_remediations:
@@ -278,7 +278,7 @@ def _execute_pipelines() -> list:
         subset = subsets[subset_id]
         for pipeline_id in entry["suggested_pipelines"]:
             pipeline_def = pipelines_index[pipeline_id]
-            print(f"▶ Running {pipeline_id} on {subset_id} ({len(subset['file_paths'])} files)")
+            print(f"Running {pipeline_id} on {subset_id} ({len(subset['file_paths'])} files)")
             vulnerabilities_and_remediations = run_pipeline_on_subset(subset, pipeline_def)
             print("vulnerabilities: ", vulnerabilities_and_remediations)
             all_vulnerabilities_and_remediations.extend(vulnerabilities_and_remediations)

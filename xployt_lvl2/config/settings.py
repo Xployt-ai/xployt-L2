@@ -8,7 +8,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     # Core settings
-    shared_volume_path: Path = Path("shared_volume_path")
+    shared_volume_path: Path = os.getenv("SHARED_VOLUME_PATH")
     repo_id: str | None = None
     codebase_path: Path = Path(".")
     output_root: Path = Path("output")

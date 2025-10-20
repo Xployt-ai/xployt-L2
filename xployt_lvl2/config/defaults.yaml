@@ -1,5 +1,4 @@
 # Default configuration values
-shared_volume_path: /Users/ashjay/Desktop/Projects/xployt/xployt-main-server/local_storage/repos/
 repo_id: vuln_node_express
 output_root: output
 llm_model: gpt-4o
