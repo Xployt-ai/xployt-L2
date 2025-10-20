@@ -68,7 +68,7 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
     print("Running LLM filter (may be skipped if key missing)")
 
     if not settings.openai_api_key:
-        print("OPENAI_API_KEY not set – skipping LLM filter.")
+        print("OPENAI_API_KEY not set - skipping LLM filter.")
         return files
 
     SELECT_VUL_FILES_LIMIT = settings.select_vul_files_limit or 30
@@ -82,14 +82,14 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
 
     # Use a verbose multiline prompt for clarity
     prompt = (
-        "You are a senior application security engineer. Your task: review the list of file paths that follow and select ONLY those paths likely to hold vulnerabilities or configuration.\n\n"
+        "Your task: Review the following list of file paths and select only those likely to contain vulnerabilities, secrets, or critical configuration logic.\n\n"
         "Guidelines (follow ALL):\n"
-        "1. INCLUDE: backend controllers, route handlers, services, DB models, authentication logic, env loaders, shell scripts, custom middleware.\n"
+        "1. INCLUDE: backend controllers, route handlers, services, Database models, authentication logic, environment loaders, shell scripts, custom middleware.\n"
         "2. EXCLUDE: static assets, images, generated code, test files, docs (README / LICENSE / *.md), build artifacts.\n"
         "3. Return only the provided paths, focusing on the most risky ones.\n"
-        "4. OUTPUT FORMAT: JSON array of strings ONLY – *no* keys, comments, or code fences. Do NOT wrap in triple backticks.\n"
+        "4. OUTPUT FORMAT: JSON array of strings ONLY - *no* keys, comments, or code fences. Do NOT wrap in triple backticks.\n"
         "5. EXACTLY reproduce the selected paths as they appear (do not modify slashes, case, etc.).\n\n"
-        "Example output (for illustration only – do NOT repeat this text):\n"
+        "Example output (for illustration only - do NOT repeat this text):\n"
         "[\n"
         "  \"backend/controllers/auth.js\",\n"
         "  \"backend/models/userModel.js\"\n"
@@ -103,7 +103,7 @@ def filter_files_with_llm(files: list[str]) -> list[str]:
         # Use traced utility function - automatically logs to LangSmith
         raw_content = traced_chat_completion(
             messages=[
-                {"role": "system", "content": "You are a senior security auditor."},
+                {"role": "system", "content": "You are a senior security engineer specializing in MERN and Node.js audits."},
                 {"role": "user", "content": prompt},
             ],
             model=settings.llm_model_for_vuln_files_selection,

@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     temperature: float = 0.1
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     llm_model_for_vuln_files_selection: str = "gpt-4o"
+    llm_model_for_generate_metadata: str = "gpt-4o"
+    llm_model_for_summarise_and_imports: str = "gpt-4o"
     llm_model_for_subset_grouping: str = "gpt-4o"
     llm_model_for_pipeline_execution: str = "gpt-4o"
     llm_model_for_pipeline_suggestion: str = "gpt-4o"

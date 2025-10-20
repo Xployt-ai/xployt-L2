@@ -41,18 +41,19 @@ def build_llm_prompt(meta: dict[str, dict]) -> str:
         lines.append(f"… {len(meta) - MAX_FILES_IN_PROMPT} more files omitted for brevity …")
 
     instructions = (
-        "You are a senior full-stack architect specializing in security reviews of MERN stack applications. "
-        "Group the following files into logical subsets based on their functional connections. Focus specifically on:\n\n"
-        "1. End-to-end data flows (Frontend → Backend → DB → Response)\n"
+        "You are reviewing a MERN stack codebase for security and architectural consistency. "
+        "Group the listed files into logical subsets based on their functional and security connections. \n\n"
+        "Focus your grouping on:\n\n"
+        "1. End-to-end data flows (Frontend → Backend → Database → Response)\n"
         "2. MVC relationships (Controller ↔ Model ↔ DB-Schema)\n"
-        "3. Shared state, props, session usage, or token verification\n"
-        "4. Authentication and authorization flows\n"
-        "5. API endpoints and their handlers\n\n"
+        "3. Shared state and session logic (props, context, tokens, cookies)\n"
+        "4. Authentication & authorization (login, token verification, access control)\n"
+        "5. API endpoints and handlers (request routing, middleware, error handling)\n\n"
         "Guidelines:\n"
-        "- Each subset should represent a complete functional unit or data flow\n"
+        "- Each subset = one cohesive functional unit or data flow.\n"
         "- Include both frontend and backend files that work together in the same subset\n"
         "- Group files that share security contexts (e.g., authentication logic)\n"
-        "- Aim for 5-15 files per subset (though this can vary)\n"
+        "- Prefer 5-15 files per subset, though flexible if functionally justified.\n"
         "- Every file should be in at least one subset\n\n"
         "Return ONLY a JSON array where each element has the exact schema below. Do NOT include any surrounding prose, explanations, or markdown fences. Return raw JSON only.\n\n"
         "Schema (exact keys and types):\n"
@@ -63,8 +64,18 @@ def build_llm_prompt(meta: dict[str, dict]) -> str:
         "[\n"
         "  {\n"
         "    \"subset_id\": \"subset-001\",\n"
-        "    \"file_paths\": [\"E:/path/to/frontend/login.jsx\", \"E:/path/to/backend/authController.js\"],\n"
-        "    \"reason\": \"End-to-end login flow: frontend form, backend auth controller, and session/token creation.\"\n"
+        "    \"file_paths\": [\n"
+        "      \"E:/path/to/frontend/components/LoginForm.jsx\",\n"
+        "      \"E:/path/to/frontend/pages/Login.jsx\",\n"
+        "      \"E:/path/to/frontend/context/AuthContext.jsx\",\n"
+        "      \"E:/path/to/backend/controllers/authController.js\",\n"
+        "      \"E:/path/to/backend/middleware/authMiddleware.js\",\n"
+        "      \"E:/path/to/backend/models/User.js\",\n"
+        "      \"E:/path/to/backend/routes/authRoutes.js\",\n"
+        "      \"E:/path/to/backend/utils/jwtHelper.js\",\n"
+        "      \"E:/path/to/backend/utils/passwordHash.js\"\n"
+        "    ],\n"
+        "    \"reason\": \"End-to-end authentication flow: frontend components (LoginForm, Login page, AuthContext) connect to backend routes and controller.\"\n"
         "  }\n"
         "]\n\n"
         "Important rules:\n"
@@ -90,7 +101,7 @@ def _ask_llm_for_grouping_chunk(chunk_meta: dict[str, dict], offset: int) -> lis
         # Use traced utility function - automatically logs to LangSmith
         content = traced_chat_completion(
             messages=[
-                {"role": "system", "content": "You are a senior security auditor. Return ONLY valid JSON array output with no additional text."},
+                {"role": "system", "content": "You are a senior security auditor and MERN full-stack architect. Return only a valid JSON array as output — no text, explanations, or comments. Each JSON object represents a logical functional subset of related files."},
                 {"role": "user", "content": prompt},
             ],
             model=_settings.llm_model_for_subset_grouping,

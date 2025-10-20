@@ -225,16 +225,12 @@ curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
            "id": "idurar-erp-crm-5"
         }'
 
+poetry run uvicorn xployt_lvl2.main:app --reload
+
 curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
      -H "Content-Type: application/json" \
      -d '{
            "id": "vuln_node_express"
-         }'
-curl -X POST http://127.0.0.1:8000/run-pipeline-sse \
-     -H "Content-Type: application/json" \
-     -d '{
-           "id": "vuln_node_express",
-           "path": "E:/PROJECTS/ACADAMIC/Xployt-ai/REPOS/xployt_lvl2/vuln_node_express"
          }'
 
 curl -X POST "http://127.0.0.1:8000/execute-module" \
